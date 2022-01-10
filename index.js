@@ -13,7 +13,7 @@ app.listen(port, () => {
     console.log(`i am listening on ${port}`)
 })
 
-const customerDetails = [
+let customerDetails = [
     {
         id: 1,
         firstname: "Abayomi",
@@ -29,11 +29,6 @@ const customerDetails = [
         email: "alliolarinde@gmail.com"
     }
 ]
-
-
-
-
-
 
 
 
@@ -66,10 +61,16 @@ app.get('/customers', (req, res) => {
 /*
     get all customer details
     route - /customers
-    endpoint - localhost:8080/customers
-*/
-app.get('/customer/:varibale1', (req, res) => {
+    endpoint - localhost:8080/customer/:email/:xy1
+    const email = req.params.x
+    const phone = req.params.y
 
+*/
+app.get('/customer/:varibale1/:phone/:email', (req, res) => {
+
+    let phone = req.params.phone
+    let email = req.params.email
+    console.log('phone: ', phone , 'email: ', email)
     let userDetails = customerDetails.filter((x) => x.id == req.params.varibale1 )
 
         res.status(200).send({
@@ -81,11 +82,13 @@ app.get('/customer/:varibale1', (req, res) => {
 })
 
 
+
+
 /*
     Post
     Create a new customer
     route - /customers
-    endpoint - ocalhost:8080/customers
+    endpoint - localhost:8080/customers
 */
 app.post('/customer', (req, res) => {
 
@@ -154,6 +157,102 @@ app.post('/customer', (req, res) => {
 })
 
 
+app.put('/customer/:id', (req, res) => {
+
+    console.log(JSON.stringify(req.body))
+    
+    const { phone, email } = req.body
+    const { id }  = req.params
+    //sanitise
+    if (!phone || !email || !id) {
+
+        res.status(422).send({
+            status: "success",
+            message: "Bad Request",
+            data: []
+        })
+    }
+
+    for (let customer in customerDetails) {
+        if (customerDetails[customer].id == id) {
+            
+            customerDetails[customer].phone = phone
+            customerDetails[customer].email = email
+        }
+    }
+    
+    res.status(200).send({
+        status: "success",
+        message: "Account Updated",
+        data: []
+    })
+
+})
+
+app.patch('/customer/:id', (req, res) => {
+
+    console.log(JSON.stringify(req.body))
+    
+    const { phone, email } = req.body
+    const { id }  = req.params
+    //sanitise
+    if (!phone || !email || !id) {
+
+        res.status(422).send({
+            status: "success",
+            message: "Bad Request",
+            data: []
+        })
+    }
+
+    for (let customer in customerDetails) {
+        if (customerDetails[customer].id == id) {
+            
+            customerDetails[customer].phone = phone
+            customerDetails[customer].email = email
+        }
+    }
+    
+    res.status(200).send({
+        status: "success",
+        message: "Account Updated",
+        data: []
+    })
+
+})
+
+
+app.delete('/customer/:id', (req, res) => {
+
+    console.log(JSON.stringify(req.body))
+    
+    const { id }  = req.params
+    //sanitise
+    if (!id) {
+
+        res.status(422).send({
+            status: "success",
+            message: "Bad Request",
+            data: []
+        })
+    }
+
+    for (let customer in customerDetails) {
+        if (customerDetails[customer].id == id) {
+            
+           //delete customerDetails[customer]
+            customerDetails.splice(customer, 1)
+        }
+    }
+
+    
+    res.status(200).send({
+        status: "success",
+        message: "Account Deleted",
+        data: []
+    })
+
+})
 
 
 
