@@ -3,6 +3,8 @@ const express = require('express')
 const app = express()
 const { v4: uuidv4 } = require('uuid')
 const bodyParser = require('body-parser')
+const morgan = require('morgan')
+const axios = require('axios').default
 
 const port = process.env.PORT
 
@@ -12,6 +14,19 @@ app.use(bodyParser.json())
 app.listen(port, () => {
     console.log(`i am listening on ${port}`)
 })
+
+// morgan((tokens, req, res) => {
+//     return [
+//         tokens.method(req, res),
+//         tokens.url(req, res),
+//         tokens.status(req, res),
+//         tokens.res(req, res, 'content-length'), '-',
+//         tokens['response-time'](req, res), 'ms'
+//     ].join(' ')
+
+// })
+app.use(morgan('combined'))
+
 
 let customerDetails = [
     {
@@ -27,7 +42,64 @@ let customerDetails = [
         surname: "Olarinde",
         phone: "08084259372",
         email: "alliolarinde@gmail.com"
+    },
+    {
+        id: 3,
+        firstname: "Alli",
+        surname: "Olarinde",
+        phone: "08084259372",
+        email: "alliolarinde@gmail.com"
+    },
+    {
+        id: 4,
+        firstname: "Alli",
+        surname: "Olarinde",
+        phone: "08084259372",
+        email: "alliolarinde@gmail.com"
+    },
+    {
+        id: 5,
+        firstname: "Alli",
+        surname: "Olarinde",
+        phone: "08084259372",
+        email: "alliolarinde@gmail.com"
+    },
+    {
+        id: 6,
+        firstname: "Alli",
+        surname: "Olarinde",
+        phone: "08084259372",
+        email: "alliolarinde@gmail.com"
+    },
+    {
+        id: 7,
+        firstname: "Alli",
+        surname: "Olarinde",
+        phone: "08084259372",
+        email: "alliolarinde@gmail.com"
+    },
+    {
+        id: 8,
+        firstname: "Alli",
+        surname: "Olarinde",
+        phone: "08084259372",
+        email: "alliolarinde@gmail.com"
+    },
+    {
+        id: 9,
+        firstname: "Alli",
+        surname: "Olarinde",
+        phone: "08084259372",
+        email: "alliolarinde@gmail.com"
+    },
+    {
+        id: 10,
+        firstname: "Alli",
+        surname: "Olarinde",
+        phone: "08084259372",
+        email: "alliolarinde@gmail.com"
     }
+
 ]
 
 
@@ -48,7 +120,19 @@ app.get('/', (req, res) => {
     endpoint - localhost:8080/customers
 */
 app.get('/customers', (req, res) => {
-    
+
+    let size = req.query.size ? parseInt(req.query.size) : 10 
+    let result = []
+    for (let i in customerDetails) {
+        result.push(customerDetails[i])
+        if (result.length === size) {
+            res.status(200).send({
+                status: "success",
+                message: "Customer successfully fetched",
+                data: result
+            })
+        }
+    }
     res.status(200).send({
         status: "success",
         message: "Customer successfully fetched",
@@ -256,16 +340,64 @@ app.delete('/customer/:id', (req, res) => {
 
 
 
-/*
-    Error 404
-*/
-app.use((req, res, next) => {
+app.get('/weather/current', (req, res) => {
+
+   
+    // axios({
+    //     method: 'get',
+    //     url: 'http://api.weatherstack.com/current?access_key=07abd14a13dbf63b419a19013fa93ce2&query=Lagos',
+    // })
+    // .then((result) => {
+    //         res.status(200).send({
+    //             status: "success",
+    //             message: "Data fetched successfully",
+    //             data: result
+    //     })
+    // })
+    // .catch((error) => {
+    //     console.log('error: ', error.response)
+    //     res.send({
+    //         status: "error",
+    //         message: "Error occured"
+    // })
+    // })
+
+
+    axios.get('http://api.weatherstack.com/current?access_key=07abd14a13dbf63b419a19013fa93ce2&query=Lagos')
+        .then((response) => {
+            // handle success
+            console.log(response.data);
+            res.status(200).send({
+                status: "success",
+                message: "Data fetched successfully",
+                data: response.data.location
+            })
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error);
+            res.send({
+                status: "error",
+                message: "Error occured"
+            })
+
+
+        })
+
+
+
+    /*
+        Error 404
+    */
+    app.use((req, res, next) => {
     
-    res.status(404).send({
-        status: "error",
-        message: "404 Not found"
+        res.status(404).send({
+            status: "error",
+            message: "404 Not found"
+        })
+
+
+
     })
-
-
 
 })
