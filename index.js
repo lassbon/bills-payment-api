@@ -5,6 +5,7 @@ const { v4: uuidv4 } = require('uuid')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const axios = require('axios').default
+const customerRoute = require('./routes/customers')
 
 const port = process.env.PORT
 
@@ -15,92 +16,8 @@ app.listen(port, () => {
     console.log(`i am listening on ${port}`)
 })
 
-// morgan((tokens, req, res) => {
-//     return [
-//         tokens.method(req, res),
-//         tokens.url(req, res),
-//         tokens.status(req, res),
-//         tokens.res(req, res, 'content-length'), '-',
-//         tokens['response-time'](req, res), 'ms'
-//     ].join(' ')
-
-// })
 app.use(morgan('combined'))
-
-
-let customerDetails = [
-    {
-        id: 1,
-        firstname: "Abayomi",
-        surname: "Ajao",
-        phone: "08084259372",
-        email: "roshbon@gmail.com"
-    },
-    {
-        id: 2,
-        firstname: "Alli",
-        surname: "Olarinde",
-        phone: "08084259372",
-        email: "alliolarinde@gmail.com"
-    },
-    {
-        id: 3,
-        firstname: "Alli",
-        surname: "Olarinde",
-        phone: "08084259372",
-        email: "alliolarinde@gmail.com"
-    },
-    {
-        id: 4,
-        firstname: "Alli",
-        surname: "Olarinde",
-        phone: "08084259372",
-        email: "alliolarinde@gmail.com"
-    },
-    {
-        id: 5,
-        firstname: "Alli",
-        surname: "Olarinde",
-        phone: "08084259372",
-        email: "alliolarinde@gmail.com"
-    },
-    {
-        id: 6,
-        firstname: "Alli",
-        surname: "Olarinde",
-        phone: "08084259372",
-        email: "alliolarinde@gmail.com"
-    },
-    {
-        id: 7,
-        firstname: "Alli",
-        surname: "Olarinde",
-        phone: "08084259372",
-        email: "alliolarinde@gmail.com"
-    },
-    {
-        id: 8,
-        firstname: "Alli",
-        surname: "Olarinde",
-        phone: "08084259372",
-        email: "alliolarinde@gmail.com"
-    },
-    {
-        id: 9,
-        firstname: "Alli",
-        surname: "Olarinde",
-        phone: "08084259372",
-        email: "alliolarinde@gmail.com"
-    },
-    {
-        id: 10,
-        firstname: "Alli",
-        surname: "Olarinde",
-        phone: "08084259372",
-        email: "alliolarinde@gmail.com"
-    }
-
-]
+app.use(customerRoute)
 
 
 
@@ -114,32 +31,6 @@ app.get('/', (req, res) => {
 
 })
 
-/*
-    get all customers details
-    route - /customers
-    endpoint - localhost:8080/customers
-*/
-app.get('/customers', (req, res) => {
-
-    let size = req.query.size ? parseInt(req.query.size) : 10 
-    let result = []
-    for (let i in customerDetails) {
-        result.push(customerDetails[i])
-        if (result.length === size) {
-            res.status(200).send({
-                status: "success",
-                message: "Customer successfully fetched",
-                data: result
-            })
-        }
-    }
-    res.status(200).send({
-        status: "success",
-        message: "Customer successfully fetched",
-        data: customerDetails
-    })
-
-})
 
 
 /*
@@ -164,8 +55,6 @@ app.get('/customer/:varibale1/:phone/:email', (req, res) => {
     })
 
 })
-
-
 
 
 /*
@@ -340,57 +229,76 @@ app.delete('/customer/:id', (req, res) => {
 
 
 
-app.get('/weather/current', (req, res) => {
+app.get('/weather/current/:location', (req, res) => {
 
-   
-    // axios({
-    //     method: 'get',
-    //     url: 'http://api.weatherstack.com/current?access_key=07abd14a13dbf63b419a19013fa93ce2&query=Lagos',
-    // })
-    // .then((result) => {
-    //         res.status(200).send({
-    //             status: "success",
-    //             message: "Data fetched successfully",
-    //             data: result
-    //     })
-    // })
-    // .catch((error) => {
-    //     console.log('error: ', error.response)
-    //     res.send({
-    //         status: "error",
-    //         message: "Error occured"
-    // })
-    // })
-
-
-    axios.get('http://api.weatherstack.com/current?access_key=07abd14a13dbf63b419a19013fa93ce2&query=Lagos')
-        .then((response) => {
-            // handle success
-            console.log(response.data);
+    const { location } = req.params
+    
+    axios.get(`${process.env.WEATHER_API_BASE_URL}/current?access_key=${process.env.WEATHER_API_KEY}&query=${location}`)
+        .then((result) => {
+            // console.log('here: ', result.data.error)
+            if (result.data.error) {
+                throw new Error('Sorry we domt have that location at the moment. Check later..')
+            }
             res.status(200).send({
                 status: "success",
-                message: "Data fetched successfully",
-                data: response.data.location
+                message: "Current weather successfully fetched",
+                data: [result.data.location, result.data.current]
+             
+        
             })
         })
-        .catch(function (error) {
-            // handle error
-            console.log(error);
-            res.send({
+        .catch((error) => {
+
+            res.status(400).send({
                 status: "error",
-                message: "Error occured"
+                message: error.message,
+                data: error
+                
+            
             })
-
-
         })
 
 
+})
 
-    /*
-        Error 404
-    */
-    app.use((req, res, next) => {
+
+
+app.get('/weather/historical-within-range/:location/:start_date/:end_date', async (req, res) => {
+
+    const { location, start_date, end_date } = req.params
     
+    const result = await axios.get(`${process.env.WEATHER_API_BASE_URL}/historical?access_key=${process.env.WEATHER_API_KEY}&query=${location}
+        & historical_date_start=${start_date}&historical_date_end=${end_date}`)
+    
+    if (result.data.error) {
+        res.status(400).send({
+            status: "error",
+            message: result.data.error.info,
+            data: []
+            
+        
+        })
+    }
+    
+    res.status(200).send({
+        status: "sucess",
+        message: 'Successfully fetched Data',
+        data: result
+        
+    
+    })
+
+})
+
+
+
+
+
+/*
+    Error 404
+*/
+    app.use((req, res, next) => {
+
         res.status(404).send({
             status: "error",
             message: "404 Not found"
@@ -399,5 +307,3 @@ app.get('/weather/current', (req, res) => {
 
 
     })
-
-})
