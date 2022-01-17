@@ -3,7 +3,7 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
-const customerRoute = require('./routes/customers.routes')
+const customerRoute = require('./routes/users.routes')
 const weatherRoute = require('./routes/weather.routes')
 
 const port = process.env.PORT
@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
     
     res.status(200).send({
         status: "error",
-        message: "You might sink, if you come here again",
+        message: "Welcome guys",
         data: []
     })
 
@@ -37,7 +37,7 @@ app.use((req, res, next) => {
 
         res.status(404).send({
             status: "error",
-            message: "404 Not found"
+            message: "Seems you got lost. so sorry"
         })
 
 })
