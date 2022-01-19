@@ -18,9 +18,11 @@
     "express": "^4.17.2",
     "form-data": "^4.0.0",
     "joi": "^17.5.0",
+    "mysql": "^2.18.1",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "express-routemap": "^1.6.0",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.15"
   }

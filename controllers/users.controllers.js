@@ -2,6 +2,7 @@
 const { v4: uuidv4 } = require('uuid')
 const Joi = require('Joi')
 const smsServices = require('../services/sms.services')
+const usersModel = require('../models/users.models')
 
 
 
@@ -25,41 +26,51 @@ const getUser = (req, res) => {
     
 }
 
-const createNewUser = (req, res) => {
+const createNewUser = async (req, res) => {
 
     const userSchema = Joi.object({
         firstname: Joi.string().required(),
         surname: Joi.string().required(),
-        email: Joi.email().required(),
+        email: Joi.string().email().required(),
         phone: Joi.string(), //length(11).pattern(/^[0-9]+$/),
         password: Joi.string().alphanum().required(),
     })
 
     const validateUser = userSchema.validate(req.body)
     if (validateUser.error) {
-        throw new Error('Bad Request')
+        res.status(422).send({
+            status: false,
+            message: "Bad Request",
+            data: []
+        })
     }
 
     const { email, firstname, surname, password, phone } = req.body
+    const customer_id = uuidv4()
 
-    //call toinsert into my database 
-   // const dbCall = await insertFunc()
-    const response = smsServices.sendSMSOTP((phone, generateOTP()))
-    if (response.success == true) {
+    usersModel.newUser(email, firstname, surname, password, phone, customer_id)
+    .then(userResult => {
+        console.log(userResult)
+        const otp = generateOTP()
+ 
+        return smsServices.sendSMSOTP(phone, otp)
+    })
+    .then(otpResult => {
+        console.log('isent the otpp with response: ', (otpResult))
         res.status(200).send({
             status: true,
-            message: response.comment,
+            message: "An otp has been sent to you email/phone",
             data: []
         })
-    
-    }
-
-
-
-
-
-
-   
+     })
+    .catch(err => {
+        console.log(err)
+        res.status(200).send({
+                    status: false,
+                    message: "Kindly try again later , This is on us",
+                    data: []
+                })
+    })
 
 }
 

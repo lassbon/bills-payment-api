@@ -8,10 +8,11 @@ const sendSMSOTP = (phone, otp) => {
     let bodyFormData = new formData()
     bodyFormData.append('token', process.env.SMS_TOKEN)
     bodyFormData.append('phone', phone)
-    bodyFormData.append('otp', otp)
-    bodyFormData.append('sender', process.env.SMS_SENDER);
-    bodyFormData.append('template_code', templateCode)
-    bodyFormData.append('ref_id', uuidv4())
+    // bodyFormData.append('otp', otp)
+    // bodyFormData.append('sender', "New Message");
+    // bodyFormData.append('template_code', templateCode)
+    // bodyFormData.append('ref_id', uuidv4())
+    console.log("going to send otp...", bodyFormData)
     return axios({
         method: "post",
         url: `${process.env.SMS_API_BASE_URL}/smsotp/send/`,
@@ -34,6 +35,7 @@ const sendVoiceOTP = (phone, otp) => {
         url: `${process.env.SMS_API_BASE_URL}/voiceotp/send`,
         headers: { "Content-Type": "multipart/form-data" },
         data: bodyFormData
+        
       })
 }
 
