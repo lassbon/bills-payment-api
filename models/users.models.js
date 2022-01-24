@@ -2,7 +2,25 @@ const mysqlConnection = require('../config/mysql')
 
 
 
-const insertOtp =   (customer_id, otp) => {
+const getUserDetailsByPhone =  async ( phone) => {
+   
+    return new Promise((resolve, reject) => {
+
+        mysqlConnection.query({
+            sql: `select * from customers where phone=?`,
+            values: [phone]
+        },
+          (err, results, fields) => {
+                if (err) {
+                 reject(err)
+                }
+                resolve(results)
+          })
+    })
+}
+
+
+const insertOtp =   async (customer_id, otp) => {
     return new Promise( (resolve, reject) => {
         mysqlConnection.query(
             {
@@ -43,9 +61,7 @@ const getOtp =   (customer, otp) => {
  
 }
 
-
-
-const newUser =   (email, firstname, surname, password, phone, customer_id) => {
+const newUser =   async (email, firstname, surname, password, phone, customer_id) => {
        return new Promise( (resolve, reject) => {
            mysqlConnection.query({
                sql: `Insert into customers(email, firstname, surname, password, phone, customer_id)values(?,?,?,?,?,?)`,
@@ -83,6 +99,7 @@ const getUserDetails = async (customer_id) => {
 }
 
 
+
 const checkUser = async (email, phone) => {
    
     return new Promise((resolve, reject) => {
@@ -99,7 +116,59 @@ const checkUser = async (email, phone) => {
           })
     })
 }
- 
+
+
+const deleteOTP = async (otp, customerid) => {
+   
+    return new Promise((resolve, reject) => {
+
+        mysqlConnection.query({
+            sql: `delete from _otps where otp=? and customer_id=?`,
+            values: [otp, customerid]
+        },
+          (err, results, fields) => {
+                if (err) {
+                 reject(err)
+                }
+                resolve(results)
+          })
+    })
+}
+
+const deleteOTPByCustomerID =  async (customerid) => {
+   
+    return new Promise((resolve, reject) => {
+
+        mysqlConnection.query({
+            sql: `delete from _otps where customer_id=?`,
+            values: [customerid]
+        },
+          (err, results, fields) => {
+                if (err) {
+                 reject(err)
+                }
+                resolve(results)
+          })
+    })
+}
+
+
+const updateOTPStatus = async (customer_id) => {
+   
+    return new Promise((resolve, reject) => {
+
+        mysqlConnection.query({
+            sql: `update customers set isotpVerified=? where customer_id=?`,
+            values: [1, customer_id]
+        },
+          (err, results, fields) => {
+                if (err) {
+                 reject(err)
+                }
+                resolve(results)
+          })
+    })
+}
 
 
 
@@ -108,5 +177,9 @@ module.exports = {
     checkUser,
     insertOtp,
     getUserDetails,
-    getOtp
+    getOtp,
+    deleteOTP,
+    updateOTPStatus,
+    getUserDetailsByPhone,
+    deleteOTPByCustomerID
 }

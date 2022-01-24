@@ -4,6 +4,7 @@ module.exports = {
                     CustomerExist : "A Customer with the email/phone exists",
                     InvalidCredentials: "Invalid Credentials.",
                     OtpSentSuccessfully: "An otp has been sent to your email/phone",
+                    OtpResentSentSuccessfully: "We just resent your otp to email/phone",
                     OtpMismatch: "Invalid OTP or Customer Supplied",
                     OtpExpired: "OTP Verification has expired, kindly request a new one",
                     OtpVerificationSuccessful: "You have successfully verified your phone number.",

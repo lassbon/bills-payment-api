@@ -12,6 +12,8 @@ router.get('/user/:id', usersController.getUser )
 
 router.put('/user/:id', usersController.updateUser)
 
+router.get('/user/resend-otp/:phone', usersController.resendOtp)
+
 
 
 
