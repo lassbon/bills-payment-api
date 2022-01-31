@@ -15,13 +15,10 @@ const generateOTP = ()=>{
 }
 
 
-
-
 const getUser = (req, res) => {
    
     const { customer } = req.params
-    
-        usersModel.
+   
         res.status(200).send({
             status: true,
             message: msgClass.CustomerDetailsFetched,
@@ -32,6 +29,7 @@ const getUser = (req, res) => {
 
 const createNewUser = async (req, res) => {
 
+ 
     const userSchema = Joi.object({
         firstname: Joi.string().required(),
         surname: Joi.string().required(),
@@ -98,9 +96,17 @@ const createNewUser = async (req, res) => {
         }  
         await usersModel.newUser(email, firstname, surname, password, phone, customer_id)
         await usersModel.insertOtp(customer_id, otp)
-        await smsServices.sendSMS(phone, `Hello, your otp is ${otp}`) 
-        await emailServices.sendEmail(email,"ACCOUNT  SUCCESSFULLY CREATED",`Hi ${firstname} ${surname}, \n\n <h1>Welcome to our Bills payment Solution</h1> \n\n\n We are happy to have you here\n Regards` )
+        //send otp to user after registration
+        await smsServices.sendSMS(phone, `Hello, your otp is ${otp}`)  
+       
+        const userFullname = `${firstname} ${surname}`
+        const dataToUpdate = {
+            "fullname": userFullname,
+            "otp": otp
+        }
 
+        emailServices.readFileAndSendEmail (email, "OTP VERIFICATION", dataToUpdate, 'otp')
+        
         res.status(200).send({
             status: true,
             message: msgClass.CustomerCreated,
@@ -148,7 +154,7 @@ const createNewUser = async (req, res) => {
 
 const verifyOTP = (req, res) => {
 
-    const { customer, otp } = req.params
+    const { customer, email, otp } = req.params
 
     // const OtpSchema = Joi.object({
     //     params: {
@@ -182,7 +188,11 @@ const verifyOTP = (req, res) => {
         usersModel.updateOTPStatus(otpResult[0].customer_id)
 
     })
-    .then(finalResponse => {
+        .then(finalResponse => {
+            const dataToUpdate = {}
+    
+            emailServices.readFileAndSendEmail (email, "WELCOME ONBOARD", dataToUpdate, 'welcome')
+            
         res.status(200).send({
             status: false,
             message: msgClass.OtpVerificationSuccessful,
