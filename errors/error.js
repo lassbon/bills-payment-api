@@ -67,5 +67,6 @@ module.exports = {
                     AccountEnquiryFailed: "Account Enquiry Failed",
                     BankAccountVerificationFailed: "Bank Account Verification Failed",
                     BankAccountAlreadyVerified: "Bank Account Already verified",
+                    BillsPaymentCategories: "Bills payment category successfully fetched",
                   
             }

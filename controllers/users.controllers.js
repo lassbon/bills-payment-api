@@ -100,12 +100,12 @@ const createNewUser = async (req, res) => {
         await smsServices.sendSMS(phone, `Hello, your otp is ${otp}`)  
        
         const userFullname = `${firstname} ${surname}`
-        const dataToUpdate = {
+        const dataReplacement = {
             "fullname": userFullname,
             "otp": otp
         }
 
-        emailServices.readFileAndSendEmail (email, "OTP VERIFICATION", dataToUpdate, 'otp')
+        emailServices.readFileAndSendEmail (email, "OTP VERIFICATION", dataReplacement, 'otp')
         
         res.status(200).send({
             status: true,

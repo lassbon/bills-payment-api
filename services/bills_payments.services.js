@@ -2,17 +2,18 @@ require('dotenv').config()
 const axios = require('axios').default
 const { v4: uuidv4 } = require('uuid')
 
-const getBillsPaymentList = () => {
+const getBillsPaymentList = (queryString) => {
 
     return axios({
         method: "get",
-        url: `${process.env.FLUTTERWAVE_BASE_URL}/bill-categories`,
+        url: `${process.env.FLUTTERWAVE_BASE_URL}/bill-categories?${queryString}`,
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${process.env.FLUTTERWAVE_SECRET_KEY}`
         }
     })
 }
+
 
 
 const validateBillService = (item_code, biller_code, phoneNumber) => {
@@ -75,4 +76,5 @@ module.exports = {
     purchases,
     validateBillService,
     validateBillsPaymentStatus
+
 }

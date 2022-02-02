@@ -6,7 +6,8 @@ const morgan = require('morgan')
 const displayRoutes = require('express-routemap')
 const mySqlConnection = require('./config/mysql')
 const userRoutes = require('./routes/users.routes')
-
+const billPaymentRoutes = require('./routes/bills_payments.routes')
+// const AppRoutes = require('./routes')
 const port = process.env.PORT
 
 // parse application/json
@@ -27,7 +28,8 @@ mySqlConnection.connect(err => {
 
 app.use(morgan('combined'))
 app.use(userRoutes)
-
+app.use(billPaymentRoutes)
+//app.use(AppRoutes)
 
 
 app.get('/', (req, res) => {
