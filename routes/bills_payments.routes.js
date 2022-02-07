@@ -4,7 +4,7 @@ const billsPaymentController  = require('../controllers/bills_payments.controlle
 
 
 
-router.get('/bills-payment/categories/:type', billsPaymentController.getBillsPaymentCategories)
+router.get('/bills-payment/categories', billsPaymentController.getBillsPaymentCategories)
 
 router.post('/bills-payment/purchases', billsPaymentController.purchaseBillsPayment)
 
