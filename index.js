@@ -8,6 +8,7 @@ const mySqlConnection = require('./config/mysql')
 const userRoutes = require('./routes/users.routes')
 const billPaymentRoutes = require('./routes/bills_payments.routes')
 const paymentRoutes = require('./routes/payment.routes')
+const customerRoutes = require('./routes/customer.routes')
 // const AppRoutes = require('./routes')
 const port = process.env.PORT
 
@@ -31,6 +32,7 @@ app.use(morgan('combined'))
 app.use(userRoutes)
 app.use(billPaymentRoutes)
 app.use(paymentRoutes)
+app.use(customerRoutes)
 //app.use(AppRoutes)
 
 
