@@ -18,7 +18,7 @@ const createTransaction = async (req, res) => {
        // phone: Joi.string(), //length(11).pattern(/^[0-9]+$/),
         amount: Joi.string().required(),
        // customer_id: Joi.string().required(),
-       // paymentOptionType: Joi.string().valid('card','banktransfer','ussd').required()
+       // paymentOptionType: Joi.string().valid('card','banktransfer','ussd').required()createRefundscreateRefundscreateRefundscreateRefunds
     })
     try {
     const responseFromJoiValidation = paymentSchema.validate(req.body)
@@ -110,7 +110,7 @@ const verifyTransaction = async (req, res) => {
      }
      
      
-     
+
      
  
      // usersModel.newUser(email, firstname, surname, password, phone, customer_id)
