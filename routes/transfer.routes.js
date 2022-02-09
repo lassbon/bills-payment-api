@@ -11,4 +11,6 @@ router.get('/payout/:transfer_id', transferController.fetchTransfer)
 
 router.get('/recipients', transferController.getTransferRecipients)
 
+router.post('/payout/bulk-transfer', transferController.getBulkTransfer)
+
 module.exports = router

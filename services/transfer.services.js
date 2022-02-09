@@ -112,20 +112,11 @@ const bulkTransfer = async() => {
         data: {
             "currency": "NGN",
             "source": "balance",
-            "transfers": [{
-                "amount": parseFloat(amount1) * 100,
-                "reason": transferNote1,
-                "recipient": recipient_id1,
-            },
-            {
-                "amount": parseFloat(amount2) * 100,
-                "reason": transferNote2,
-                "recipient": recipient_id2
-            }
-        
-        ]
-            
-            
+            "transfers": [...{
+                "amount": parseFloat(amount) * 100,
+                "reason": transferNote,
+                "recipient": recipient_id,
+            }]
         }
     })
 }

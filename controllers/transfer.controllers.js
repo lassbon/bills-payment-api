@@ -131,12 +131,36 @@ const getTransferRecipients = async (req, res) =>{
     }
 }
 
+const getBulkTransfer = async(req, res) =>{
+
+    // i'm stuck here 
+    const {}
+
+    try {
+ 
+        const bulkTransferResponse = await transferServices.bulkTransfer()
+        
+        res.status(200).send({
+            status: true,
+            message: "Bulk Payout initiated",
+            data: bulkTransferResponse.data.data
+        })
+    } 
+    catch(e) {
+        res.status(400).send({
+            status: false,
+            message:   e.message || msgClass.GeneralError
+
+     })
+    }
+}
 
 
 module.exports = {
     addTransferRecipient,
     initializingTransfer,
     fetchTransfer,
-    getTransferRecipients
+    getTransferRecipients,
+    getBulkTransfer
     
 }
