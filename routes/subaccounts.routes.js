@@ -9,7 +9,7 @@ router.get('/subaccount', subaccountsController.listSubaccounts)
 
 router.get('/subaccount/:id', subaccountsController.getSubaccount)
 
-// router.put('/subaccount', subaccountsController.updateSubaccount)
+router.put('/subaccount/:id', subaccountsController.updateSubaccount)
 
 
 

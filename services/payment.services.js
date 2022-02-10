@@ -55,9 +55,10 @@ const createSubaccount = async (data) => {
 }
 
 const listSubaccounts = async() => {
+    
     return axios({
         method: "get",
-        url: `${process.env.PAYSTACK_BASE_URL}/subaccount`,
+        url: `${process.env.PAYSTACK_BASE_URL}/subaccount?perpage=${listSizePerPage}&page=${pageToGet}`,
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
@@ -80,6 +81,23 @@ const getSubaccount = async(id) => {
 }
 
 
+const updateSubaccount = async (data) => {
+    return axios({
+        method: "put",
+        url: `${process.env.PAYSTACK_BASE_URL}/subaccount/:id`,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+        },
+        data: {
+            "business_name":data.business_name,
+            "settlement_bank_code":data.settlement_bank_code,
+            
+        }
+    })
+}
+
+
 
 
 
@@ -88,5 +106,6 @@ module.exports = {
     verifyPayment,
     createSubaccount,
     listSubaccounts,
-    getSubaccount
+    getSubaccount,
+    updateSubaccount
 }
