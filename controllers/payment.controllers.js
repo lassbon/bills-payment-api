@@ -27,7 +27,7 @@ const createTransaction = async (req, res) => {
         }
         const paymentInitializationResponse = await paymentService.initalizePayment(req.body)
         
-        console.log("Got back from paysatck: ", JSON.stringify(paymentInitializationResponse.data))
+       // console.log("Got back from paysatck: ", JSON.stringify(paymentInitializationResponse.data))
         if (paymentInitializationResponse.data.status == false) {
            throw new Error("Sorry, payment cannot be initialise this moment")
             

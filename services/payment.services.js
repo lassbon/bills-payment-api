@@ -25,21 +25,68 @@ const initalizePayment = async(data) => {
 
 const verifyPayment = async(payment_ref) => {
 
-return axios({
+    return axios({
         method: "get",
         url: `${process.env.PAYSTACK_BASE_URL}/transaction/verify/${payment_ref}`,
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
         },
-})
+    })
     
 }
+
+const createSubaccount = async (data) => {
+    return axios({
+        method: "post",
+        url: `${process.env.PAYSTACK_BASE_URL}/subaccount/create`,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+        },
+        data: {
+            "business_name":data.business_name,
+            "settlement_bank_code":data.settlement_bank_code,
+            "account_number":data.account_number,
+            "percentage_charge": 0.001,
+            //"description": description
+        }
+    })
+}
+
+const listSubaccounts = async() => {
+    return axios({
+        method: "get",
+        url: `${process.env.PAYSTACK_BASE_URL}/subaccount`,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+        }
+        
+    })
+}
+
+
+const getSubaccount = async(id) => {
+    return axios({
+        method: "get",
+        url: `${process.env.PAYSTACK_BASE_URL}/subaccount/:id`,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+        }
+        
+    })
+}
+
 
 
 
 
 module.exports = {
     initalizePayment,
-    verifyPayment
+    verifyPayment,
+    createSubaccount,
+    listSubaccounts,
+    getSubaccount
 }
