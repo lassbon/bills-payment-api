@@ -10,26 +10,19 @@ const msgClass = require('../errors/error')
 const error = []
 
 const generateOTP = ()=>{
-
     return Math.floor(Math.random() * 10000)
 }
 
-
 const getUser = (req, res) => {
-   
     const { customer } = req.params
-   
         res.status(200).send({
             status: true,
             message: msgClass.CustomerDetailsFetched,
             data: userDetails || []
         })
-    
 }
 
 const createNewUser = async (req, res) => {
-
- 
     const userSchema = Joi.object({
         firstname: Joi.string().required(),
         surname: Joi.string().required(),
@@ -121,10 +114,6 @@ const createNewUser = async (req, res) => {
 
      })
     }
-    
-    
-    
-    
 
     // usersModel.newUser(email, firstname, surname, password, phone, customer_id)
     // .then(userResult => {
@@ -247,10 +236,7 @@ const resendOtp =   async (req, res) => {
             data: []
         })
     }
-
-
-  
-}
+  }
 
 module.exports = {
     createNewUser,
