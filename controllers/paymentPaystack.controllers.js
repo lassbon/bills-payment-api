@@ -17,13 +17,14 @@ const createPage = async (req, res) => {
 	});
 	try {
 		const responseFromJoiValidation = createPageSchema.validate(req.body);
-		console.log(responseFromJoiValidation);
+		// console.log(responseFromJoiValidation);
 		if (responseFromJoiValidation.error) {
-			throw new Error('Bad request');
+			throw new Error('Bad request (Joi validation)');
 		}
-		const CreateResponse = await paymentPaystackService.createPage(req.body);
+		const CreateResponse = await paymentPaystackService.createPageServices(
+			req.body
+		);
 
-		// console.log('Got back from paystack: ', JSON.stringify(testResponse.data));
 		if (CreateResponse.data.status == false) {
 			throw new Error('Sorry, page cannot be created at this moment');
 		}
@@ -44,10 +45,15 @@ const createPage = async (req, res) => {
 // list page
 
 const listPage = async (req, res) => {
-	const { page, perPage } = req.params;
+	const perPage = req.query.perPage || 50;
+	const page = req.query.page || 1;
+	// const { page, perPage } = req.params;
 
 	try {
-		const pageListResponse = await paymentPaystackService.listPage(payment_ref);
+		const pageListResponse = await paymentPaystackService.listPageServices(
+			page,
+			perPage
+		);
 		if (pageListResponse.data.data.status != 'true') {
 			throw new Error(
 				'We could not load this apge at this. Kindly contact support'
@@ -68,14 +74,51 @@ const listPage = async (req, res) => {
 	}
 };
 
+// updatePage
+const updatePage = async (req, res) => {
+	const { name, description, amount, active } = req.body;
+	const createPageSchema = Joi.object({
+		name: Joi.string().required(),
+		description: Joi.string(),
+		amount: Joi.string(),
+		slug: Joi.string(),
+		active: Joi.boolean(),
+	});
+	try {
+		const responseFromJoiValidation = createPageSchema.validate(req.body);
+		// console.log(responseFromJoiValidation);
+		if (responseFromJoiValidation.error) {
+			throw new Error('Bad request (Joi validation)');
+		}
+		const updatePageResponse = await paymentPaystackService.updatePageServices(
+			req.body
+		);
+
+		if (updatePageResponse.data.status == false) {
+			throw new Error('Sorry, page cannot be updated at this moment');
+		}
+
+		res.status(200).send({
+			status: true,
+			message: 'page successfully created',
+			data: updatePageResponse.data.data,
+		});
+	} catch (e) {
+		res.status(400).send({
+			status: false,
+			message: e.message || msgClass.GeneralError,
+		});
+	}
+};
+
 // fetchPage
 const fetchPage = async (req, res) => {
 	// const { amount, paymentOptionType, email, phone, fullname, customer_id } = req.body
-	const { id_or_slug } = req.params;
+	const { slug } = req.params;
 
 	try {
-		const fetchPageResponse = await paymentPaystackService.fetchPage(
-			payment_ref
+		const fetchPageResponse = await paymentPaystackService.fetchPageServices(
+			req.params
 		);
 		if (fetchPageResponse.data.data.status != 'true') {
 			throw new Error(
@@ -96,11 +139,39 @@ const fetchPage = async (req, res) => {
 		});
 	}
 };
+// check for availability
+const CheckSlugAvailability = async (req, res) => {
+	// const { amount, paymentOptionType, email, phone, fullname, customer_id } = req.body
+	const { slug } = req.params;
 
+	try {
+		const CheckSlugAvailabilityResponse =
+			await paymentPaystackService.CheckSlugAvailabilityServices(slug);
+		if (CheckSlugAvailabilityResponse.data.data.status != 'true') {
+			throw new Error(
+				'We could not be able to retrieve the data for this details. Kindly contact support'
+			);
+		}
+
+		res.status(200).send({
+			status: true,
+			message: 'details successfully retrieved',
+			data: CheckSlugAvailabilityResponse.data.data,
+		});
+	} catch (e) {
+		// console.log(`error: ${e.message}`)
+		res.status(400).send({
+			status: false,
+			message: e.message || msgClass.GeneralError,
+		});
+	}
+};
+
+// test
 const test = async (req, res) => {
 	// console.log('im here');
 	try {
-		const testResponse = await paymentPaystackService.test(req.body);
+		const testResponse = await paymentPaystackService.testServices(req.body);
 		console.log(`test response : ${testResponse}`);
 
 		res.status(200).send({
@@ -120,5 +191,7 @@ module.exports = {
 	createPage,
 	listPage,
 	fetchPage,
+	CheckSlugAvailability,
 	test,
+	updatePage,
 };

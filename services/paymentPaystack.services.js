@@ -3,7 +3,7 @@ const axios = require('axios').default;
 const { v4: uuidv4 } = require('uuid');
 
 // create page
-const createPage = async (data) => {
+const createPageServices = async (data) => {
 	return axios({
 		method: 'post',
 		url: `${process.env.PAYSTACK_BASE_URL}/page`,
@@ -12,20 +12,22 @@ const createPage = async (data) => {
 			Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
 		},
 		data: {
-			name: 'bills_payment',
-			description: 'payment inventory',
-			slug: 'bills_payments',
-			redirect_url: 'https://www.zulfahgroup.com/',
+			name: data.name,
+			description: data.description,
+			slug: data.slug,
+			redirect_url: data.redirect_url,
 			amount: parseFloat(data.amount) * 100,
+			custom_fields: data.custom_fields,
+			metadata: data.metadata,
 		},
 	});
 };
 
 // list page
-const listPage = async (page, perPage, from, to) => {
+const listPageServices = async (page, perPage) => {
 	return axios({
 		method: 'get',
-		url: `${process.env.PAYSTACK_BASE_URL}/page`,
+		url: `${process.env.PAYSTACK_BASE_URL}/page?page=${page}&perPage=${perPage}`,
 		headers: {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
@@ -35,22 +37,40 @@ const listPage = async (page, perPage, from, to) => {
 
 // fetch page
 
-const fetchPage = (page_identifier) => {
+const fetchPageServices = (slug) => {
 	return axios({
 		method: 'get',
-		url: `${process.env.PAYSTACK_BASE_URL}/payment_page/fetchPage/${page_identifier}`,
+		url: `${process.env.PAYSTACK_BASE_URL}/page/:${slug}`,
 		headers: {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
 		},
 	});
 };
+//update page ***rosh help me with this :id_or_slug***
+const updatePageServices = async (data) => {
+	return axios({
+		method: 'put',
+		url: `${process.env.PAYSTACK_BASE_URL}/page/:${slug}`,
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+		},
+		data: {
+			name: data.name,
+			description: data.description,
+			amount: parseFloat(data.amount) * 100,
+			active: data.active,
+		},
+	});
+};
+
 // slug Avalability
 
-const CheckSlugAvailability = (id_or_slug) => {
+const CheckSlugAvailabilityServices = (slug) => {
 	return axios({
 		method: 'get',
-		url: `${process.env.PAYSTACK_BASE_URL}/payment_page/fetchPage/${id_or_slug}`,
+		url: `${process.env.PAYSTACK_BASE_URL}/page/check_slug_availability/:${slug}`,
 		headers: {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
@@ -58,13 +78,15 @@ const CheckSlugAvailability = (id_or_slug) => {
 	});
 };
 // test
-const test = async (data) => {
+const testServices = async (data) => {
 	return 'hello world';
 };
 
 module.exports = {
-	createPage,
-	test,
-	listPage,
-	fetchPage,
+	createPageServices,
+	testServices,
+	listPageServices,
+	fetchPageServices,
+	CheckSlugAvailabilityServices,
+	updatePageServices,
 };

@@ -4,7 +4,12 @@ const paymentPaystackController = require('../controllers/paymentPaystack.contro
 
 router.post('/paymentPaystack/page', paymentPaystackController.createPage);
 router.get('/paymentPaystack/page', paymentPaystackController.listPage);
-router.get('/paymentPaystack/page/id', paymentPaystackController.fetchPage);
+router.get('/paymentPaystack/page/:id', paymentPaystackController.fetchPage);
+router.get(
+	'/paymentPaystack/page/check_slug_availability/:slug',
+	paymentPaystackController.CheckSlugAvailability
+);
+router.get('/paymentPaystack/page/:slug', paymentPaystackController.updatePage);
 router.get('/paymentPaystack/test', paymentPaystackController.test);
 
 module.exports = router;
