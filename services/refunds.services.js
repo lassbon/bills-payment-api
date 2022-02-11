@@ -30,7 +30,7 @@ return axios({
     url: `${process.env.PAYSTACK_BASE_URL}/refund`,
     headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+        "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}?reference_id=${data.reference_id}&${data.currency}&from=${data.from}&to=${data.to}&perPage=${data.perPage}&page=${data.page}`
     }
 })
 }

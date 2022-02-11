@@ -1,12 +1,12 @@
 const refundServices = require('../services/refunds.services')
 
-msgClass = require('../errors/error')
+const msgClass = require('../errors/error')
 
 const createRefund = async (req, res) => {
 
     const { transaction, amount, customer_note, merchant_note } = req.body
 try {
-    const createRefundResponse = await refundServices.createRefund(req.body)
+    const createRefundResponse = await refundServices.createRefunds(req.body)
 
     if (createRefundResponse.data.status != true){
         throw new Error("Refund couldnt be completed at the time, please try again")
@@ -26,7 +26,9 @@ catch(e){
 
 }
 const getAllRefunds = async (req, res) => {
-    const { reference_id, currency, from, to, perPage, page } = req.query
+    let { reference_id,currency, from, to,perPage, page } = req.query
+    perPage = req.query.perPage || 50
+    page = req.query.page || 1
 
 try{
     const responseGetRefunds= await refundServices.listRefunds(req.query)
@@ -63,10 +65,10 @@ const fetchAllRefunds = async (req, res) => {
         })
     }
     catch(err){
-        res.send(422){
+        res.status(422).send({
             status: false,
             message: err.message || msgClass.GeneralError
-        }
+        })
     }
 
 }
