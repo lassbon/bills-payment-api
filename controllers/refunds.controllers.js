@@ -26,7 +26,7 @@ catch(e){
 
 }
 const getAllRefunds = async (req, res) => {
-    let { reference_id,currency, from, to,perPage, page } = req.query
+    let { reference_id, currency, from, to,perPage, page } = req.query
     perPage = req.query.perPage || 50
     page = req.query.page || 1
 
@@ -54,7 +54,7 @@ const fetchAllRefunds = async (req, res) => {
     const { reference } = req.params
 
     try {
-        const responseFetchRefunds = await refundServices.fecthRefunds(req.params)
+        const responseFetchRefunds = await refundServices.fecthRefunds(reference)
         if (responseFetchRefunds.data.status != true){
             throw new Error("Bad Request")
         }
@@ -67,7 +67,7 @@ const fetchAllRefunds = async (req, res) => {
     catch(err){
         res.status(422).send({
             status: false,
-            message: err.message || msgClass.GeneralError
+            message: "No refund available" || msgClass.GeneralError
         })
     }
 

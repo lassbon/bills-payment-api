@@ -27,10 +27,10 @@ const listRefunds =   async (data)=> {
 
 return axios({
     method: "get",
-    url: `${process.env.PAYSTACK_BASE_URL}/refund`,
+    url: `${process.env.PAYSTACK_BASE_URL}/refund?reference_id=${data.reference_id}&${data.currency}&from=${data.from}&to=${data.to}&perPage=${data.perPage}&page=${data.page}`,
     headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}?reference_id=${data.reference_id}&${data.currency}&from=${data.from}&to=${data.to}&perPage=${data.perPage}&page=${data.page}`
+        "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
     }
 })
 }
