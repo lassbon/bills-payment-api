@@ -170,6 +170,23 @@ const updateOTPStatus = async (customer_id) => {
     })
 }
 
+const updateInvoice =   (data) => {
+    return new Promise( (resolve, reject) => {
+        mysqlConnection.query({
+            sql: `update invoice set invoice_playstach_ref=?, invoice_playstach_tx_ref=?,transaction_flutterwave_flw_ref=?,transaction__flutterwave_tx_ref=? where invoiceID=?`,
+            values: [data.payment_flutterwave_flw_ref, data.payment_flutterwave_tx_ref, data.transaction_flutterwave_flw_ref, data.transaction__flutterwave_tx_ref, data.sn]
+        }
+         ,  (err, results, fields) => {
+             if (err) {
+               reject(err);
+             }
+             resolve(results);
+         })
+      })
+ 
+
+}
+
 
 
 module.exports = {
@@ -181,5 +198,6 @@ module.exports = {
     deleteOTP,
     updateOTPStatus,
     getUserDetailsByPhone,
-    deleteOTPByCustomerID
+    deleteOTPByCustomerID,
+    updateInvoice
 }

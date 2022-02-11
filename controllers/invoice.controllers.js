@@ -236,8 +236,8 @@ return axios({
 
 
 const updateInvoice = (req, res) => {
-const { content_type, customerID, amount,} = req.param
-
+const { content_type, customerID, amount,} = req.body
+const { invoice_ref}
 
 res.status(201).send({
     status: false,
