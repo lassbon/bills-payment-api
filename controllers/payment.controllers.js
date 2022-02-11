@@ -3,7 +3,7 @@ const Joi = require('joi');
 const { v4: uuidv4 } = require('uuid');
 const msgClass = require('../errors/error');
 const paymentService = require('../services/payment.services');
-const paymentModel = require('../models/payment.models');
+// const paymentModel = require('../models/paymentPaystack.models');
 
 const createTransaction = async (req, res) => {
 	// const { amount, paymentOptionType, email, phone, fullname, customer_id } = req.body

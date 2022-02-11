@@ -60,7 +60,7 @@ const updatePageServices = async (data) => {
 			name: data.name,
 			description: data.description,
 			amount: parseFloat(data.amount) * 100,
-			active: data.active,
+			active: 'false',
 		},
 	});
 };

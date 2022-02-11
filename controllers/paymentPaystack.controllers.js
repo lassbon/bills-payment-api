@@ -3,7 +3,7 @@ const Joi = require('joi');
 const { v4: uuidv4 } = require('uuid');
 const msgClass = require('../errors/error');
 const paymentPaystackService = require('../services/paymentPaystack.services');
-const paymentPaystackModel = require('../models/paymentPaystack.models');
+// const paymentPaystackModel = require('../models/paymentPaystack.models');
 
 // createPage
 const createPage = async (req, res) => {
