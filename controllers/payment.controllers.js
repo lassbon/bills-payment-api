@@ -139,10 +139,95 @@ const verifyTransaction = async (req, res) => {
  
  }
 
+ const createNewSubscription = async (req, res) => {
+    const { customer, plan } = req.body
+
+    const subscriptionSchema = Joi.object({
+        customer: Joi.string().email().required(),
+        plan: Joi.string().required(),
+     })
+
+     try{
+        const subscriptionValidation = subscriptionSchema.validate(req.body)  
+        if (subscriptionValidation.error) {
+            throw new Error("Provide correct details")
+        }
+        const confirmSubscription  = await paymentService.createSubscription(req.body)
+        if (confirmSubscription.data.status != true) {
+            throw new Error("Kindy confirm customer/plan details")
+             
+         }
+     }
+     catch(err){
+         
+        res.status(400).send({
+            status: false,
+            message:   err.message
+
+     })
+     }
+
+}
+
+const listNewSubscription = async (req, res) => {
+    const perPage = req.query.perPage || 50
+    const page = req.query.page || 1
+
+    try {
+ 
+        const listSubscriptionPerPageAndPage = await paymentService.listSubscription(perPage,page)
+        if (listSubscriptionPerPageAndPage.status == true) {
+            throw new Error("Subscription page cannot be retrieved")
+        }
+        
+        res.status(200).send({
+            status: true,
+            message: "Page retrieved successfully",
+            data: listSubscriptionPerPageAndPage.status
+        })
+    } 
+    catch(err) {
+       // console.log(`error: ${e.message}`)
+        res.status(400).send({
+            status: false,
+            message:   err.message || msgClass.GeneralError
+
+     })
+    }
+
+}
+
+const fetchNewSubscription = async (req, res) => {
+ 
+    const {id_or_code} = req.params
+
+    try {
+
+        const confirmSubscriptionsFetched = await paymentService.fetchSubscription(id_or_code)
+        if (confirmSubscriptionsFetched.data.status != true) {
+            throw new Error(msgClass.ConsumerError)
+        }
+        
+        res.status(200).send({
+            status: true,
+            message: "Subscriptions retrieved"
+        })
+    } 
+    catch(err) {
+        res.status(400).send({
+            status: false,
+            message:   err.message || msgClass.ConsumerError
+
+     })
+    }
+
+}
  
 
 
 module.exports = {
     createTransaction,
-    verifyTransaction
+    verifyTransaction,
+    listNewSubscription,
+    fetchNewSubscription
 }

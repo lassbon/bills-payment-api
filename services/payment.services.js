@@ -37,9 +37,53 @@ return axios({
 }
 
 
+const createSubscription = async(data) => {
 
+    return axios({
+            method: "post",
+            url: `${process.env.PAYSTACK_BASE_URL}/subscription`,
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+            },
+            data: {
+                "customer": data.customer, 
+                "plan": data.plan 
+            }
+    })
+}
+
+
+const listSubscription = async(perPage,page) => {
+
+    return axios({
+            method: "get",
+            url: `${process.env.PAYSTACK_BASE_URL}/subscription?perPage=${perPage}&page=${page}`,
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+            }
+             
+    })
+}
+
+const fetchSubscription = async(id_or_code) => {
+
+    return axios({
+            method: "get",
+            url: `${process.env.PAYSTACK_BASE_URL}/subscription/${id_or_code}`,
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+            }
+            
+    })
+}
 
 module.exports = {
     initalizePayment,
-    verifyPayment
+    verifyPayment,
+    createSubscription,
+    listSubscription,
+    fetchSubscription
 }
