@@ -1,13 +1,32 @@
 require('dotenv').config()
 const { v4: uuidv4 } = require('uuid')
 const Joi = require('Joi')
+const bcrypt = require('bcrypt')
+const saltRounds = 10
 const smsServices = require('../services/sms.services')
 const emailServices = require('../services/email.services')
 const usersModel = require('../models/users.models')
 const msgClass = require('../errors/error')
 
 
-const error = []
+const hashMyPassowrd = (mypassword) => {
+    
+    return new Promise((resolve, reject) => {
+
+        bcrypt.genSalt(saltRounds,  (err, salt)=> {
+            bcrypt.hash(mypassword, salt,  (err, hash)=> {
+                if (err) {
+                    reject(err)
+                }
+                resolve([salt, hash])
+            });
+        });
+ 
+
+    })
+}
+
+
 
 const generateOTP = ()=>{
 
@@ -50,51 +69,17 @@ const createNewUser = async (req, res) => {
     const { email, firstname, surname, password, phone } = req.body
     const customer_id = uuidv4()
     const otp = generateOTP()
-    /**
-     * check if user email exist before creating a new user
-     * if email exist throw error
-     * else go ahead to create the user
-     */
-    /*
-    //.then.catch approach
-
-    usersModel.checkUser(email, phone)
-    .then(checkUserResult => {
-        if (checkUserResult != "") {
-            throw new Error(msgClass.CustomerExist)
-        }
-
-        return usersModel.newUser(email, firstname, surname, password, phone, customer_id)
-    })
-    .then(sendOtpResult => {
-       //send to db
-        return usersModel.insertOtp(customer_id,otp)
-    })
-    .then(newuserResult => {
-        return smsServices.sendSMS(phone, `Hello, your otp is ${otp}`)
-    })
-    .then(newOtpResult => {
-        res.status(200).send({
-            status: true,
-            message: msgClass.CustomerCreated,
-            data: []
-        })
-    })
-    .catch(checkUserErr => {
-        console.log(checkUserErr)
-            res.status(200).send({
-                status: false,
-                message:  checkUserErr.message || msgClass.GeneralError,
-                response: []
-         })
-     })
-     */
+ 
     try {
        const checkIfUserExists =  await usersModel.checkUser(email, phone)
         if (checkIfUserExists != "") {
             throw new Error(msgClass.CustomerExist)
         }  
-        await usersModel.newUser(email, firstname, surname, password, phone, customer_id)
+
+     
+        const passwordHashed =  await hashMyPassowrd(password)
+        console.log(passwordHashed)
+        await usersModel.newUser(email, firstname, surname, passwordHashed[1] , phone, customer_id)
         await usersModel.insertOtp(customer_id, otp)
         //send otp to user after registration
         await smsServices.sendSMS(phone, `Hello, your otp is ${otp}`)  
