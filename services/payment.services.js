@@ -54,7 +54,7 @@ const createSubaccount = async (data) => {
     })
 }
 
-const listSubaccounts = async() => {
+const listSubaccounts = async(perPage, page) => {
     
     return axios({
         method: "get",
