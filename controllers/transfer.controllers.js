@@ -132,9 +132,18 @@ const getTransferRecipients = async (req, res) =>{
 }
 
 const getBulkTransfer = async(req, res) =>{
+    // input from the frontend
+    const data = [amount1, recipient1, amount2, recipient2, amount3, recipient3]
+    // new array to be passed to paystack
+    const newData =[]
+    for(let i =0; i< data.length ; i+=2){
+        let newObj = {}
+        newObj.amount = data[i]
+        newObj.recipient_id = data[i+1]
+        newData.push(newObj)
+    }
 
-    // i'm stuck here 
-    const {}
+    
 
     try {
  
