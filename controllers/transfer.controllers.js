@@ -133,7 +133,8 @@ const getTransferRecipients = async (req, res) =>{
 
 const getBulkTransfer = async(req, res) =>{
     // input from the frontend
-    const data = [amount1, recipient1, amount2, recipient2, amount3, recipient3]
+    //const data = [amount1, recipient1, amount2, recipient2, amount3, recipient3]
+    data =[]
     // new array to be passed to paystack
     const newData =[]
     for(let i =0; i< data.length ; i+=2){
