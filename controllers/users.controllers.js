@@ -2,6 +2,8 @@ require('dotenv').config()
 const { v4: uuidv4 } = require('uuid')
 const Joi = require('Joi')
 const bcrypt = require('bcrypt')
+const util = require('util')
+const { isEmpty, doSomeAsyncMagik } = require('../utils/utils')
 const saltRounds = 10
 const smsServices = require('../services/sms.services')
 const emailServices = require('../services/email.services')
@@ -54,31 +56,35 @@ const createNewUser = async (req, res) => {
         surname: Joi.string().required(),
         email: Joi.string().email().required(),
         phone: Joi.string(), //length(11).pattern(/^[0-9]+$/),
-        password: Joi.string().alphanum().required(),
+        password: Joi.string().required(),
     })
 
     const validateUser = userSchema.validate(req.body)
     if (validateUser.error) {
+        //console.log(validateUser.error.details[0].message)
         res.status(422).send({
             status: false,
-            message: "Bad Request",
-            data: []
+            message: "Bad Request"
         })
     }
 
     const { email, firstname, surname, password, phone } = req.body
     const customer_id = uuidv4()
     const otp = generateOTP()
- 
     try {
-       const checkIfUserExists =  await usersModel.checkUser(email, phone)
-        if (checkIfUserExists != "") {
-            throw new Error(msgClass.CustomerExist)
-        }  
-
-     
-        const passwordHashed =  await hashMyPassowrd(password)
-        console.log(passwordHashed)
+        const [err, checkIfUserExists] = await doSomeAsyncMagik(usersModel.checkUser(email, phone))
+        if (err) {
+            
+            throw new Error("Try again please,this is on us, something happened")
+        }
+        if (!isEmpty(checkIfUserExists)) {
+            console.log("here: ", checkIfUserExists)
+            throw new Error("User with Email/Phone exists")
+        }
+    
+    
+        const  passwordHashed =  await hashMyPassowrd(password)
+       
         await usersModel.newUser(email, firstname, surname, passwordHashed[1] , phone, customer_id)
         await usersModel.insertOtp(customer_id, otp)
         //send otp to user after registration
@@ -97,15 +103,51 @@ const createNewUser = async (req, res) => {
             message: msgClass.CustomerCreated,
             data: []
         })
-    } 
-    catch (err) {
-        console.log(`error: ${err.message}`)
+
+    } catch (e) {
         res.status(200).send({
             status: false,
-            message:   err.message || msgClass.GeneralError
-
-     })
+            message: e.message || "It has happened."
+        
+        })
     }
+
+    // try {
+    //    const checkIfUserExists =  await usersModel.checkUser(email, phone)
+    //     if (checkIfUserExists != "") {
+    //         throw new Error(msgClass.CustomerExist)
+    //     }  
+
+     
+    //     const passwordHashed =  await hashMyPassowrd(password)
+    //     console.log(passwordHashed)
+    //     await usersModel.newUser(email, firstname, surname, passwordHashed[1] , phone, customer_id)
+    //     await usersModel.insertOtp(customer_id, otp)
+    //     //send otp to user after registration
+    //     await smsServices.sendSMS(phone, `Hello, your otp is ${otp}`)  
+       
+    //     const userFullname = `${firstname} ${surname}`
+    //     const dataReplacement = {
+    //         "fullname": userFullname,
+    //         "otp": otp
+    //     }
+
+    //     emailServices.readFileAndSendEmail (email, "OTP VERIFICATION", dataReplacement, 'otp')
+        
+    //     res.status(200).send({
+    //         status: true,
+    //         message: msgClass.CustomerCreated,
+    //         data: []
+    //     })
+    // } 
+    // catch (err) {
+    //     console.log(`error: ${err.message}`)
+    //     res.status(200).send({
+    //         status: false,
+    //         message:   err.message || msgClass.GeneralError
+
+    //  })
+    // }
     
     
     
@@ -242,5 +284,6 @@ module.exports = {
     getUser,
     updateUser,
     verifyOTP,
-    resendOtp
+    resendOtp,
+    hashMyPassowrd
 }

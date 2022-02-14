@@ -2,7 +2,16 @@ require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const { v4: uuidv4 } = require('uuid') 
-const usersModel = require('../models/users.models')
+const { getUserDetailsByEmail, forgetPasswordModel,
+        validateHash, updatePassword,
+        deleteResetPasswordRecord } = require('../models/users.models')
+const { isEmpty, doSomeAsyncMagik } = require('../utils/utils')
+const { readFileAndSendEmail } =  require('../services/email.services')
+const { hashMyPassowrd } =  require('../controllers/users.controllers')
+
+
+
+
 
 const login = async (req, res) => {
     const { email, password } = req.body
@@ -11,20 +20,26 @@ const login = async (req, res) => {
 
     usersModel.getUserDetailsByEmail(email)
     .then(resultFromLogin => {
-        if (resultFromLogin == "") {
-            throw new Error("Invalid Email or password")
+        if (isEmpty(resultFromLogin)) {
+            //log that the email does not exist
+            throw new Error("Invalid Credentials")
         }
-
+        
          payload = resultFromLogin[0]
         
+        // if (payload.isAccountBlocked == true) {
+        //     throw new Error("Acccount restricted, contact support")
+        // }
 
         return bcrypt.compare(password, payload.password)
         
     })
     .then(resultFromPasswordCompare => {
         if (resultFromPasswordCompare == false) {
-            throw new Error("Invalid Email or password")
+            throw new Error("Invalid Email or Password")
         }
+
+    
        
         const dataToAddInMyPayload = {
             email: payload.email,
@@ -35,10 +50,10 @@ const login = async (req, res) => {
                     if (err) {
                         throw new Error("Something went wrong")
                     }
-                    res.status(200).send({
-                        status: true,
-                        message: "Successfully logged in ",
-                        data: token
+                 
+                    res.setHeader('token', token).status(200).send({
+                                status: true,
+                                message: "Successfully logged in "
                    })
                    
                 }
@@ -61,15 +76,108 @@ const login = async (req, res) => {
 
 }
 
+const startForgetPassword = async (req, res) => {
 
-const logout = () => {
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvc2hib25AZ21haWwiLCJwaG9uZSI6IjA4MDg0MjU5MzcyIiwiaWQiOiI5NTVlMTgzZC05ZDgxLTQ4ODAtYjUwZi0wYjYxN2Y2MDYyZDAiLCJpYXQiOjE2NDQ0Mzk4NTcsImV4cCI6MTY0NDQ0MzQ1N30.ozOgwaUIezSbCPSo454QguZnpZ3GzaZDNikmccMgqqY"
-    jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) {
-        console.log(JSON.stringify(decoded)) // bar
-      });
+    const { email } = req.params
+    
+    try {
+        
+        let [err, checkIfEmailExist] = await doSomeAsyncMagik(getUserDetailsByEmail(email))
+        if (err) {
+            //log from our end 
+            //email does not exists
+            throw new Error('This is on us, something went wrong', 400)
+        }
+        if (isEmpty(checkIfEmailExist)) {
+            throw new Error(`If the email ${email} account exist with us, you will get a reset password email`)
+        }
+        let hash = uuidv4().replace(/-/gi, '')
+        let [err2, createForgetPasword] = await doSomeAsyncMagik(forgetPasswordModel(email,hash))
+       
+        if (err2) {
+            throw new Error('Please try This is on us, something went wrong')
+        }
+        if (!isEmpty(createForgetPasword)) {
+            
+            let dataReplacement = {
+                "fullname": ` ${checkIfEmailExist[0].firstname}  ${checkIfEmailExist[0].surname}`,
+                "resetPasswordlink": `${process.env.RESET_PASSWORD_LINK}/${hash}`
+            }
+            //send email
+            readFileAndSendEmail(email, "RESET PASSWORD", dataReplacement, "forgetPassword")
+        }
+       
+
+        res.status(200).send({
+            status: true,
+            message: `If the email ${email} account exist with us, you will get a reset password email`
+        })
+
+
+    } catch (e) {
+        console.log(e)
+        res.status(400).send({
+            status: true,
+            message: e.message 
+        })
+
+    }
+
+
 }
+
+const completeForgetPassword = async (req, res) => {
+
+    const hash = req.params
+    const { newPassword, confirmNewPassword } = req.body
+    try {
+        const [err, checkIfHashIsValid] = await doSomeAsyncMagik(validateHash(hash))
+        if (err) {
+            throw new Error('Internal Server Error', 500)
+        }
+        if (isEmpty(checkIfHashIsValid)) {
+
+            throw new Error('Unable to perform this operation', 400)
+        }
+        if (newPassword != confirmNewPassword) {
+            throw new Error('Password does not match', 400)
+        }
+
+        //update the password
+        const passwordHashed = await hashMyPassowrd(newPassword)
+        let [err2, updatePasswordResponse] = await updatePassword(passwordHashed, checkIfHashIsValid[0].email)
+        if (err2) {
+            throw new Error('Internal Server Error', 500)
+        }
+
+        await deleteResetPasswordRecord(hash)
+
+        res.status(200).send({
+            status: true,
+            message: `Password successfully updated`
+        })
+    }
+catch (e) {
+    console.log(e)
+        res.status(400).send({
+            status: true,
+            message: e.message 
+        })
+}
+
+
+}
+
+// const logout = () => {
+//     const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InJvc2hib25AZ21haWwiLCJwaG9uZSI6IjA4MDg0MjU5MzcyIiwiaWQiOiI5NTVlMTgzZC05ZDgxLTQ4ODAtYjUwZi0wYjYxN2Y2MDYyZDAiLCJpYXQiOjE2NDQ0Mzk4NTcsImV4cCI6MTY0NDQ0MzQ1N30.ozOgwaUIezSbCPSo454QguZnpZ3GzaZDNikmccMgqqY"
+//     jwt.verify(token, process.env.JWT_SECRET, function(err, decoded) {
+//         console.log(JSON.stringify(decoded)) // bar
+//       });
+// }
 
 module.exports = {
     login,
-     logout
+    startForgetPassword,
+    completeForgetPassword
+     
 }

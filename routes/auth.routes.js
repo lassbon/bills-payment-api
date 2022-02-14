@@ -6,7 +6,9 @@ const authController  = require('../controllers/auth.controllers')
 
 router.post('/login', authController.login)
 
-router.post('/logout', authController.logout)
+router.get('/start-forget-password/:email', authController.startForgetPassword)
+
+router.patch('/complete-forget-password/:hash', authController.completeForgetPassword)
 
 
 
