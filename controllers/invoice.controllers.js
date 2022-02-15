@@ -1,8 +1,8 @@
 require('dotenv').config()
 const { v4: uuidv4 } = require('uuid')
 const Joi = require('Joi')
-const smsServices = require('../services/sms.services')
-const emailServices = require('../services/email.services')
+//const smsServices = require('../services/sms.services')
+//const emailServices = require('../services/email.services')
 const usersModel = require('../models/users.models')
 const msgClass = require('../errors/error')
 const { Successful } = require('../errors/error')
@@ -14,10 +14,10 @@ const error = []
 const createInvoice = async (req, res) => {
 
     InvoiceOfItemToCreateSchema = Joi.object({
-        "Customer id": { uuid },
-        "amount": Joi.string().required(),
-        "due_date": "Seller SA",           
-        "description": joi.string().required(),
+        "Customer_id": Joi.string().required(),
+        "amount": Joi.string().required(),// this is Payment request amount. It should be used when line items and tax values aren't specified.
+        "due_date": "Seller SA",   //this is representation of request due date         
+        "description": joi.string().required(), // It's a short description of the payment request
         "line_items": joi.string().required(),
         "tax": Joi.string().required(),
         "currency": Joi.string().required(),
@@ -27,54 +27,37 @@ const createInvoice = async (req, res) => {
         "invoice_number": Joi.string().required(),
         "split_code":Joi.string().required()
     })
+
+    const {Customer_id, amount, due_date, has_invoice, invoice_number } = req.body
+
     try{
         const validateInvoiceBeforeCreate = InvoiceOfItemToCreateSchema.validate(req.body)
-            if(validateInvoiceBeforeCreate.error)
-                throw new Error("Invoice is Invalid something went wrong, Please try again") ||
-    res.status(201).send({
-        status: Success,
-        message: "Find attached your invoice below for reference",
-        data: []
-
-    })
+            if(validateInvoiceBeforeCreate.error){
+                throw new Error("Invoice is Invalid something went wrong, Please try again") 
+                 
+            }   
+        await invoiceModels.newInvoice(Customer_id, amount, due_date, has_invoice, invoice_number)
+        
+  
     }
 
     catch(err){
         res.status(201).send({
             status: true,
-            message: "Invoice Successfully generated",
-            response: listInvoice.data.data
+            message: "This Invoice cannot found",
         })
     }
- 
-const createInvoiceModel = await paystack.invoiceItems.create({
-        customer: '{{CUSTOMER_ID}}',
-        price: '{{PRICE_ID}}',
-        collection_method: 'send_invoice',
-        amount: 
-        days_until_due: 30
-      });
 
-invoiceModel.createNewInvoice(invoiceId, seller_name, buyer_name, item_1, amount, discount_kind, show_discount, sell_date)
-
-return axios({
-    method: "post",
-    url: `${process.env.PAYSTACK_BASE_URL}/invoice/${invoiceId}/validate?code=${customerId}&customer=${phoneNumber}`,
-    headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.FLUTTERWAVE_SECRET_KEY}`
-    }
-})
 }
 
 const listInvoice = (req, res) => {
 //const{perPage, page, customerID, status, currency, invoiceId } = req.params
-    page = req.params.page 
-    perPage = req.params.perPage
+    const page = req.params.page 
+    const perPage = req.params.perPage
   
          try{
             await InvoiceService.listInvoice(invoiceID)
-            if (InvoiceService.data.data.status = ! true){
+            if (InvoiceService.data.data.status != true){
                 throw new Error("Cannot print this revoice. session timed out contact support '")
             }
         }
@@ -85,15 +68,6 @@ const listInvoice = (req, res) => {
                 response: listInvoice.data.data
             })
         } 
-
-    return axios({
-            method: "get",
-            url: `${process.env.PAYSTACK_BASE_URL}/invoice/listCustomer'sInvoice`,
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
-            }
-        })
 
 }
  
@@ -117,17 +91,6 @@ res.status(200).send({
 })
 }
 
-// or this 
-
-return axios({
-    method: "get",
-    url: `${process.env.PAYSTACK_BASE_URL}/invoice/viewInvioce/NG`,
-    headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
-    }
-}) 
- 
 
 }
 
@@ -137,23 +100,11 @@ const verifyInvioce = async (req, res) => {
 
  try {
 
-    const ResponseFromIvoiceVerification = await paymentService.verifyPayment(payment_ref)
+    const ResponseFromIvoiceVerification = await paymentService.verifyPayment(invoice_ref)
     if (ResponseFromIvoiceVerification.data.data.status != "success") {
         throw new Error("We could not verify the this invoice on our system.")
     }
-            // or
-if (invoice_ref.error) {
-    res.status(422).send({
-        status: false,
-      message: msgClass.BadRequest || `Invoice ${invoice_ref} is incorrect`,
-        data: []
-    })
-}
-    res.status(200).send({
-        status: true,
-        message: "This invoice generated successfully",
-        data: ResponseFrominvoiceVerification.data.data
-    })
+    
 }
  
 catch(err) {
@@ -163,6 +114,22 @@ catch(err) {
 
  })
 }
+
+            // or
+   /*  if (invoice_ref.error) {
+                res.status(422).send({
+                    status: false,
+                  message: msgClass.BadRequest || `Invoice ${invoice_ref} is incorrect`,
+                    data: []
+                })
+        }else{
+                res.status(200).send({
+                    status: true,
+                    message: "This invoice generated successfully",
+                    data: ResponseFrominvoiceVerification.data.data
+                })
+            
+            } */
 
 
 }
@@ -184,15 +151,7 @@ if ( invoice_ref != ''){
             message:"Notification cannot tbe send to user",
             data: []
         })
-    }
-    return axios({
-        method: "get",
-        url: `${process.env.PAYSTACK_BASE_URL}/invoice/viewInvioce/NG`,
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
-        }
-    })         
+    }       
 }
 
 const FinalizeInvoice = async (req, res) => {
@@ -214,54 +173,20 @@ try {
     })
 }
 
-return axios({
-    method: "get",
-    url: `${process.env.PAYSTACK_SECRET_KEY}/invoice/finalizeInvoice`,
-    headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${getToken.data.access_token}`
-    },
-    data: {
-            "invoiceID":invoiceID,
-            "amount": amount,
-            "useLocalAmount": false,
-            "customIdentity": uuidv4(),
-            "customenrPhone": {
-            "number": phoneNumber
-            }
-    }
-})
-
 }
 
 
-const updateInvoice = (req, res) => {
-const { content_type, customerID, amount,} = req.body
-const { invoice_ref}
+const updateInvoice = () => {
+    
 
-res.status(201).send({
-    status: false,
-    message: "Find attached your invoice below for reference",
-    response: []
-})
+    res.status(200).send({
+        status: true,
+        message: "Invoice successfully updated",
+        data: []
+    })
 }
 
-const updateTransaction =   async (data) => {
-return new Promise( (resolve, reject) => {
-    mysqlConnection.query({
-        sql: `update invoice set seller_name, buyer_name, item_1, amount, discount_kind? where invoiceID=?`,
-        values: [data.invoice_seller_name, data.invoice_buyer_name, data.item_1, data.amount, data.discount_kind, data.invoiceID]
-    }
-     ,  (err, results, fields) => {
-         if (err) {
-           reject(err);
-         }
-         resolve(results);
-     })
-  })
 
-
-}
 
 
 module.exports = {
@@ -271,7 +196,6 @@ module.exports = {
     verifyInvioce,
     sendNotification,
     FinalizeInvoice,
-    updateInvoice,
-    updateTransaction
-
+    updateInvoice
+    
 }

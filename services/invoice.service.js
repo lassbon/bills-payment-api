@@ -7,6 +7,19 @@ const { default: axios } = require('axios')
 const { header } = require('express/lib/request')
  
 
+const createNewInvoice = (invoiceId, seller_name, buyer_name, item_1, amount, discount_kind, show_discount, sell_date) =>{
+    
+return axios({
+    method: "post",
+    url: `${process.env.PAYSTACK_BASE_URL}/invoice/${invoiceId}/validate?code=${customerId}&customer=${phoneNumber}`,
+    headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.FLUTTERWAVE_SECRET_KEY}`
+    }
+})
+
+}
+
 
 const listInvoice = (perPage, page, customerID, currency, invoiceId) => {
     return axios({
@@ -57,9 +70,35 @@ const updateInvoice = () => {
 
 }
 
+const FinalizeInvoice = () => {
+
+    return axios({
+        method: "get",
+        url: `${process.env.PAYSTACK_SECRET_KEY}/invoice/finalizeInvoice`,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${getToken.data.access_token}`
+        },
+        data: {
+                "invoiceID":invoiceID,
+                "amount": amount,
+                "useLocalAmount": false,
+                "customIdentity": uuidv4(),
+                "customenrPhone": {
+                "number": phoneNumber
+                }
+        }
+    })
+
+}
+
+
+
     module.exports = {
+        createNewInvoice,
         listInvoice,
         verifyInvioce,
         viewInvioce,
-        updateInvoice
+        updateInvoice,
+        FinalizeInvoice
     }
