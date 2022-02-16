@@ -18,7 +18,9 @@ const createTransaction = async (req, res) => {
        // phone: Joi.string(), //length(11).pattern(/^[0-9]+$/),
         amount: Joi.string().required(),
        // customer_id: Joi.string().required(),
-       // paymentOptionType: Joi.string().valid('card','banktransfer','ussd').required()createRefundscreateRefundscreateRefundscreateRefunds
+
+        paymentOptionType: Joi.string().valid('card','banktransfer','ussd').required()
+
     })
     try {
     const responseFromJoiValidation = paymentSchema.validate(req.body)
@@ -85,61 +87,83 @@ const verifyTransaction = async (req, res) => {
 
 
     // const { amount, paymentOptionType, email, phone, fullname, customer_id } = req.body
-     const { payment_ref } = req.params
+    const { payment_ref } = req.params
+
     
-     try {
  
-         const paymentVerificationResponse = await paymentService.verifyPayment(payment_ref)
-         if (paymentVerificationResponse.data.data.status != "success") {
-             throw new Error("We could not verify the amount paid. Kindly contact support")
-         }
+
+    // paymentService.verifyPayment(payment_ref)
+    //     .then(result => {
+    //     res.status(200).send({
+    //                  status: true,
+    //                  message: "Transaction successfully found",
+    //                  data: result.data.data
+    //     })
+    // })
+    //     .catch(error => {
+          
+    //             if (result.data.status == false) {
+    //             throw new Error("Omo you got Alli, o se matric, ko gbe rice wa ")
+    //         }
+    //     res.status(200).send({
+    //                  status: true,
+    //                  message: error.message || "Transaction not found"
+    //              })
+    // })
+    
+    try {
+ 
+        const [paymentVerificationResponse, paymentVerificationErr] = await paymentService.verifyPayment(payment_ref)
+        if (paymentVerificationErr) {
+            throw new Error("We could not verify the amount paid. Kindly contact support")
+        }
          
-         res.status(200).send({
-             status: true,
-             message: "Transaction successfully initiated",
-             data: paymentVerificationResponse.data.data
-         })
-     } 
-     catch(e) {
-        // console.log(`error: ${e.message}`)
-         res.status(400).send({
-             status: false,
-             message:   e.message || msgClass.GeneralError
+        res.status(200).send({
+            status: true,
+            message: "Transaction successfully initiated",
+            data: paymentVerificationResponse.data.data
+        })
+    }
+    catch (err) {
+        console.log("eeeee: ", err)
+        res.status(400).send({
+            status: false,
+            message: err
  
-      })
-     }
+        })
+    }
      
      
 
      
  
-     // usersModel.newUser(email, firstname, surname, password, phone, customer_id)
-     // .then(userResult => {
-     //     console.log(userResult)
-     //     const otp = generateOTP()
+    // usersModel.newUser(email, firstname, surname, password, phone, customer_id)
+    // .then(userResult => {
+    //     console.log(userResult)
+    //     const otp = generateOTP()
   
-     //     return smsServices.sendSMS(phone, `Hello, your otp is ${otp}`)
-     // })
-     // .then(otpResult => {
-     //     //console.log('i sent the otpp with response: ', (otpResult))
-     //     res.status(200).send({
-     //         status: true,
-     //         message: `${msgClass.CustomerCreated}. ${msgClass.OtpSentSuccessfully}`,
-     //         data: []
-     //     })
-     //  })
-     //     .catch(err => {
-     //        //console.log(err)
-     //     res.status(200).send({
-     //         status: false,
-     //         message: "Kindly try again later , This is on us",
-     //         response: []
-     //      })
-     // })
+    //     return smsServices.sendSMS(phone, `Hello, your otp is ${otp}`)
+    // })
+    // .then(otpResult => {
+    //     //console.log('i sent the otpp with response: ', (otpResult))
+    //     res.status(200).send({
+    //         status: true,
+    //         message: `${msgClass.CustomerCreated}. ${msgClass.OtpSentSuccessfully}`,
+    //         data: []
+    //     })
+    //  })
+    //     .catch(err => {
+    //        //console.log(err)
+    //     res.status(200).send({
+    //         status: false,
+    //         message: "Kindly try again later , This is on us",
+    //         response: []
+    //      })
+    // })
  
- }
 
- 
+
+}
 
 
 module.exports = {

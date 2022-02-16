@@ -3,7 +3,6 @@ const router = express.Router()
 const billsPaymentController  = require('../controllers/bills_payments.controllers')
 
 
-
 router.get('/bills-payment/categories', billsPaymentController.getBillsPaymentCategories)
 
 router.post('/bills-payment/purchases', billsPaymentController.purchaseBillsPayment)
