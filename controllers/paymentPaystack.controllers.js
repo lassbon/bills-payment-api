@@ -128,7 +128,7 @@ const fetchPage = async (req, res) => {
 				'We could not be able to fetch this details. Kindly contact support'
 			);
 		}
-
+		// someting
 		res.status(200).send({
 			status: true,
 			message: 'Page successfully fetched',
