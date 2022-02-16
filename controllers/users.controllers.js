@@ -1,10 +1,12 @@
 require('dotenv').config()
 const { v4: uuidv4 } = require('uuid')
+
 const Joi = require('Joi')
 const bcrypt = require('bcrypt')
 const util = require('util')
 const { isEmpty, doSomeAsyncMagik } = require('../utils/utils')
 const saltRounds = 10
+
 const smsServices = require('../services/sms.services')
 const emailServices = require('../services/email.services')
 const usersModel = require('../models/users.models')
