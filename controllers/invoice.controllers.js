@@ -50,13 +50,13 @@ const createInvoice = async (req, res) => {
 
 }
 
-const listInvoice = (req, res) => {
+const listInvoice =  (req, res) => {
 //const{perPage, page, customerID, status, currency, invoiceId } = req.params
     const page = req.params.page 
     const perPage = req.params.perPage
   
          try{
-            await InvoiceService.listInvoice(invoiceID)
+            InvoiceService.listInvoice(invoiceID)
             if (InvoiceService.data.data.status != true){
                 throw new Error("Cannot print this revoice. session timed out contact support '")
             }
@@ -76,7 +76,7 @@ const viewInvioce = (req, res) => {
 const { invoiceID } = req.params
 const invoice = generateNewInvoice()
 try{
-   await viewInvioceFromServices.sendInvoice(invoice, `Find your invoivice below: ${generateNewInvoice}`)
+   viewInvioceFromServices.sendInvoice(invoice, `Find your invoivice below: ${generateNewInvoice}`)
    res.status(201).send({
     status: false,
     message: "Find attached your invoice below for reference",
@@ -157,7 +157,7 @@ if ( invoice_ref != ''){
 const FinalizeInvoice = async (req, res) => {
 
 if(InvoiceOfItemToCreateSchema == invoice_ref)
-const invoiceStore = []
+ 
 try {
      await createInvoiceModel.getInvoiceByPhoneAndEmail(invoiceStore)
     res.status(200).send({

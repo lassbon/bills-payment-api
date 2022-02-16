@@ -1,20 +1,20 @@
 const express = require('express')
 const router = express.Router()
-const usersInvoiceController  = require('../controllers/invoice.controllers')
+const invoiceController  = require('../controllers/invoice.controllers')
 
-router.post('/user/create', usersInvoiceController.createInvoice)
+router.post('/user/create', invoiceController.createInvoice)
 
-router.get('user/listInvoiceID', usersInvoiceController.listInvoice)
+router.get('user/listInvoiceID', invoiceController.listInvoice)
 
-router.get('user/viewIvoice', usersInvoiceController.viewInvioce)
+router.get('user/viewIvoice', invoiceController.viewInvioce)
 
-router.get('user/verifyInvioce', usersInvoiceController.verifyInvioce)
+router.get('user/verifyInvioce', invoiceController.verifyInvioce)
 
-router.post('user/sendNotification', usersInvoiceController.sendNotification)
+router.post('user/sendNotification', invoiceController.sendNotification)
 
-router.post('user/finalizeInvo ice', usersInvoiceController.FinalizeInvoice)
+router.post('user/finalizeInvo ice', invoiceController.FinalizeInvoice)
 
-router.put('user/udpdateInvoice', usersInvoiceController.updateInvoice)
+router.put('user/udpdateInvoice', invoiceController.updateInvoice)
 
 
 
