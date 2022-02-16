@@ -45,8 +45,8 @@ const createPage = async (req, res) => {
 // list page
 
 const listPage = async (req, res) => {
-	const perPage = req.query.perPage || 50;
-	const page = req.query.page || 1;
+	const perPage = parseInt(req.query.perPage) || 50;
+	const page = parseInt(req.query.page) || 1;
 	// const { page, perPage } = req.params;
 
 	try {
@@ -54,9 +54,9 @@ const listPage = async (req, res) => {
 			page,
 			perPage
 		);
-		if (pageListResponse.data.data.status != 'true') {
+		if (pageListResponse.data.status != true) {
 			throw new Error(
-				'We could not load this apge at this. Kindly contact support'
+				'We could not load this page at this. Kindly contact support'
 			);
 		}
 
@@ -91,7 +91,10 @@ const updatePage = async (req, res) => {
 			throw new Error('Bad request (Joi validation)');
 		}
 		const updatePageResponse = await paymentPaystackService.updatePageServices(
-			req.body
+			name,
+			description,
+			amount,
+			active
 		);
 
 		if (updatePageResponse.data.status == false) {
@@ -118,9 +121,9 @@ const fetchPage = async (req, res) => {
 
 	try {
 		const fetchPageResponse = await paymentPaystackService.fetchPageServices(
-			req.params
+			slug
 		);
-		if (fetchPageResponse.data.data.status != 'true') {
+		if (fetchPageResponse.data.status != 'true') {
 			throw new Error(
 				'We could not be able to fetch this details. Kindly contact support'
 			);
@@ -147,7 +150,7 @@ const CheckSlugAvailability = async (req, res) => {
 	try {
 		const CheckSlugAvailabilityResponse =
 			await paymentPaystackService.CheckSlugAvailabilityServices(slug);
-		if (CheckSlugAvailabilityResponse.data.data.status != 'true') {
+		if (CheckSlugAvailabilityResponse.data.status != true) {
 			throw new Error(
 				'We could not be able to retrieve the data for this details. Kindly contact support'
 			);
