@@ -117,11 +117,11 @@ const updatePage = async (req, res) => {
 // fetchPage
 const fetchPage = async (req, res) => {
 	// const { amount, paymentOptionType, email, phone, fullname, customer_id } = req.body
-	const { slug } = req.params;
+	const { id } = req.params;
 
 	try {
 		const fetchPageResponse = await paymentPaystackService.fetchPageServices(
-			slug
+			id
 		);
 		if (fetchPageResponse.data.status != 'true') {
 			throw new Error(

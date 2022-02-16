@@ -40,7 +40,7 @@ const listPageServices = async (page, perPage) => {
 const fetchPageServices = (slug) => {
 	return axios({
 		method: 'get',
-		url: `${process.env.PAYSTACK_BASE_URL}/page/:${slug}`,
+		url: `${process.env.PAYSTACK_BASE_URL}/page/${slug}`,
 		headers: {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
@@ -51,7 +51,7 @@ const fetchPageServices = (slug) => {
 const updatePageServices = async (data) => {
 	return axios({
 		method: 'put',
-		url: `${process.env.PAYSTACK_BASE_URL}/page/:${slug}`,
+		url: `${process.env.PAYSTACK_BASE_URL}/page/${slug}`,
 		headers: {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
@@ -70,7 +70,7 @@ const updatePageServices = async (data) => {
 const CheckSlugAvailabilityServices = (slug) => {
 	return axios({
 		method: 'get',
-		url: `${process.env.PAYSTACK_BASE_URL}/page/check_slug_availability/:${slug}`,
+		url: `${process.env.PAYSTACK_BASE_URL}/page/check_slug_availability/${slug}`,
 		headers: {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
