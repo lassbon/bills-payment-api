@@ -8,10 +8,15 @@ const mySqlConnection = require('./config/mysql')
 const userRoutes = require('./routes/users.routes')
 const billPaymentRoutes = require('./routes/bills_payments.routes')
 const paymentRoutes = require('./routes/payment.routes')
+const resolveRoutes = require('./routes/resolve.routes')
 // const AppRoutes = require('./routes')
 const port = process.env.PORT
 
 // parse application/json
+/*Body-parser is the Node. js body parsing middleware. 
+It is responsible for parsing the incoming request bodies in a middleware
+before you handle it.
+*/
 app.use(bodyParser.json())
 
 
@@ -31,6 +36,7 @@ app.use(morgan('combined'))
 app.use(userRoutes)
 app.use(billPaymentRoutes)
 app.use(paymentRoutes)
+app.use(resolveRoutes)
 //app.use(AppRoutes)
 
 
