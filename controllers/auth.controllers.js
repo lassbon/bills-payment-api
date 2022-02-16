@@ -43,6 +43,7 @@ const login = async (req, res) => {
        
         const dataToAddInMyPayload = {
             email: payload.email,
+            isAdmin: false,
             _id: uuidv4()
             }
                 jwt.sign(dataToAddInMyPayload, process.env.JWT_SECRET, { expiresIn : process.env.JWT_EXPIRES_TIME },

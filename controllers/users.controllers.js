@@ -36,16 +36,29 @@ const generateOTP = ()=>{
 }
 
 
-const getUser = (req, res) => {
+const getUser = async(req, res) => {
    
-    const { customer } = req.params
-   
+    const  email  = req.body.customerEmail
+
+    const [err, getUserDetails] = await doSomeAsyncMagik(usersModel.getUserDetailsByEmail(email))
+    try {
+        if (err) {
+            throw new Error("Unable to complete action")
+        }
+        delete getUserDetails[0].password
+        delete getUserDetails[0].sn
+
         res.status(200).send({
             status: true,
-            message: msgClass.CustomerDetailsFetched,
-            data: userDetails || []
+            message: "User detils fetched",
+            data: getUserDetails
         })
-    
+    } catch (e) {
+        res.status(400).send({
+            status: false,
+            message: "Error"
+        })
+    }
 }
 
 const createNewUser = async (req, res) => {
