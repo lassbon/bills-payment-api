@@ -11,7 +11,7 @@ const usersModel = require('../models/users.models')
 const msgClass = require('../errors/error')
 
 
-const hashMyPassowrd = (mypassword) => {
+const hashMyPassword = (mypassword) => {
     
     return new Promise((resolve, reject) => {
 
@@ -83,7 +83,7 @@ const createNewUser = async (req, res) => {
         }
     
     
-        const  passwordHashed =  await hashMyPassowrd(password)
+        const  passwordHashed =  await hashMyPassword(password)
        
         await usersModel.newUser(email, firstname, surname, passwordHashed[1] , phone, customer_id)
         await usersModel.insertOtp(customer_id, otp)
@@ -119,7 +119,7 @@ const createNewUser = async (req, res) => {
     //     }  
 
      
-    //     const passwordHashed =  await hashMyPassowrd(password)
+    //     const passwordHashed =  await hashMyPassword(password)
     //     console.log(passwordHashed)
     //     await usersModel.newUser(email, firstname, surname, passwordHashed[1] , phone, customer_id)
     //     await usersModel.insertOtp(customer_id, otp)
@@ -285,5 +285,5 @@ module.exports = {
     updateUser,
     verifyOTP,
     resendOtp,
-    hashMyPassowrd
+    hashMyPassword
 }

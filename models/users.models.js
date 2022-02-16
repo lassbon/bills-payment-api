@@ -231,11 +231,12 @@ const validateHash = async (hash) => {
 }
 
 const updatePassword = async (password, email) => {
+
    
     return new Promise((resolve, reject) => {
 
         mysqlConnection.query({
-            sql: `update Customer set password=? where email=?`,
+            sql: `update customers set password=? where email=?`,
             values: [password, email]
         },
           (err, results, fields) => {

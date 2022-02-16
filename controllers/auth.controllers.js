@@ -7,7 +7,7 @@ const { getUserDetailsByEmail, forgetPasswordModel,
         deleteResetPasswordRecord } = require('../models/users.models')
 const { isEmpty, doSomeAsyncMagik } = require('../utils/utils')
 const { readFileAndSendEmail } =  require('../services/email.services')
-const { hashMyPassowrd } =  require('../controllers/users.controllers')
+const { hashMyPassword } =  require('../controllers/users.controllers')
 
 
 
@@ -18,7 +18,7 @@ const login = async (req, res) => {
 
     let payload
 
-    usersModel.getUserDetailsByEmail(email)
+    getUserDetailsByEmail(email)
     .then(resultFromLogin => {
         if (isEmpty(resultFromLogin)) {
             //log that the email does not exist
@@ -128,7 +128,7 @@ const startForgetPassword = async (req, res) => {
 
 const completeForgetPassword = async (req, res) => {
 
-    const hash = req.params
+    const {hash} = req.params
     const { newPassword, confirmNewPassword } = req.body
     try {
         const [err, checkIfHashIsValid] = await doSomeAsyncMagik(validateHash(hash))
@@ -142,13 +142,18 @@ const completeForgetPassword = async (req, res) => {
         if (newPassword != confirmNewPassword) {
             throw new Error('Password does not match', 400)
         }
+        console.log("checkIfHashIsValid: ", checkIfHashIsValid)
 
         //update the password
-        const passwordHashed = await hashMyPassowrd(newPassword)
-        let [err2, updatePasswordResponse] = await updatePassword(passwordHashed, checkIfHashIsValid[0].email)
+        const passwordHashed = await hashMyPassword(newPassword)
+        let [err2, updatePasswordResponse] = await doSomeAsyncMagik(updatePassword(passwordHashed[1], checkIfHashIsValid[0].email))
         if (err2) {
             throw new Error('Internal Server Error', 500)
         }
+        console.log("after ")
+        // if (!isEmpty(updatePasswordResponse)) {
+        //     throw new Error('Internal Server Error', 500)
+        // }
 
         await deleteResetPasswordRecord(hash)
 
@@ -160,7 +165,7 @@ const completeForgetPassword = async (req, res) => {
 catch (e) {
     console.log(e)
         res.status(400).send({
-            status: true,
+            status: false,
             message: e.message 
         })
 }
