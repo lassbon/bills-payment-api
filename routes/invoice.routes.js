@@ -12,7 +12,7 @@ router.get('user/verifyInvioce', invoiceController.verifyInvioce)
 
 router.post('user/sendNotification', invoiceController.sendNotification)
 
-router.post('user/finalizeInvo ice', invoiceController.FinalizeInvoice)
+router.post('user/finalizeInvoice', invoiceController.FinalizeInvoice)
 
 router.put('user/udpdateInvoice', invoiceController.updateInvoice)
 
