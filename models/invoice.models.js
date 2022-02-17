@@ -1,7 +1,7 @@
 const mysqlConnection = require('../config/mysql')
 
 
-const newInvoice =   async (Customer_id, amount, due_date, has_invoice, invoice_number) => {
+const createNewInvoice =   async (Customer_id, amount, due_date, has_invoice, invoice_number) => {
     return new Promise( (resolve, reject) => {
         mysqlConnection.query({
             sql: `Insert into invoiceTable(Customer_id, amount, due_date, has_invoice, invoice_number)values(?,?,?,?,?)`,
@@ -42,6 +42,6 @@ const updateInvoice =   async (data) => {
 
 
 module.exports = {
-    newInvoice,
+    createNewInvoice,
     updateInvoice
 }

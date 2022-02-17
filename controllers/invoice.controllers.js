@@ -28,14 +28,25 @@ const createInvoice = async (req, res) => {
         "split_code":Joi.string().required()
     })
 
-    const {Customer_id, amount, due_date, has_invoice, invoice_number } = req.body
+    const validateInvoice = InvoiceOfItemToCreateSchema.validate(req.body)
 
+    if (validateInvoice.error) {
+         res.status(422).send({
+            status: false,
+            message: "Bad Request"
+        })
+    }
+    const {Customer_id, amount, due_date, has_invoice, invoice_number } = req.body
     try{
         const validateInvoiceBeforeCreate = InvoiceOfItemToCreateSchema.validate(req.body)
             if(validateInvoiceBeforeCreate.error){
                 throw new Error("Invoice is Invalid something went wrong, Please try again") 
                  
-            }   
+            }  
+            if(!validateInvoiceBeforeCreate){
+                throw new Error("We don't have reciept for this invoice")
+
+            } 
         await invoiceModels.newInvoice(Customer_id, amount, due_date, has_invoice, invoice_number)
         
   
@@ -51,15 +62,20 @@ const createInvoice = async (req, res) => {
 }
 
 const listInvoice =  (req, res) => {
-//const{perPage, page, customerID, status, currency, invoiceId } = req.params
-    const page = req.params.page 
-    const perPage = req.params.perPage
+const{perPage, page, customerID, status, currency, invoiceId } = req.params
+    const page = req.params.page   || 60
+    const perPage = req.params.perPage || 5
   
          try{
-            InvoiceService.listInvoice(invoiceID)
-            if (InvoiceService.data.data.status != true){
+            InvoiceFromService.invoiceService.listInvoice(req.query)
+            if (InvoiceFromService.data.data.status != true){
                 throw new Error("Cannot print this revoice. session timed out contact support '")
             }
+            res.status(200).send({
+                status: true,
+                message:InvoiceFromService.data.data.message,
+                data: InvoiceFromService.data.data
+            })
         }
         catch(err){
             res.status(201).send({
@@ -73,20 +89,20 @@ const listInvoice =  (req, res) => {
  
 const viewInvioce = (req, res) => {
 
-const { invoiceID } = req.params
-const invoice = generateNewInvoice()
+const { invoice_ID } = req.params
+const invoice = generateNewInvoice(invoice_ID)
 try{
-   viewInvioceFromServices.sendInvoice(invoice, `Find your invoivice below: ${generateNewInvoice}`)
+   const respViewInvioceFromServices = await viewInvioceFromServices.viewInvoice(invoice)
    res.status(201).send({
     status: false,
     message: "Find attached your invoice below for reference",
-    response: []
+    response: respViewInvioceFromServices.data.data.message
 })
 }
 catch (err) {
 res.status(200).send({
     status: true,
-    message: msgClass.GeneralError,
+    message: msgClass.GeneralError || "Invalid Invoice",
     data: []
 })
 }
@@ -156,19 +172,22 @@ if ( invoice_ref != ''){
 
 const FinalizeInvoice = async (req, res) => {
 
-if(InvoiceOfItemToCreateSchema == invoice_ref)
+    const { invoice_ref } = req.params
  
 try {
-     await createInvoiceModel.getInvoiceByPhoneAndEmail(invoiceStore)
-    res.status(200).send({
-        status: true,
-        message: msgClass.getInvoiceByPhoneAndEmail,
-        data: getInvoiceByPhoneAndEmail.data
-    })
+     const finalizeInvoiceRes = await createInvoiceService.finalizeInvoiceDetails(invoice_ref)
+     if(finalizeInvoiceRes != invoice_ref){
+        res.status(200).send({
+            status: true,
+            message: msgClass.getInvoiceByPhoneAndEmail,
+            data: getInvoiceByPhoneAndEmail.data
+        })
+     }
+     
 } catch (err) {
      res.status(400).send({
         status: false,
-        message: err.message,
+        message: err.message || "Cannot generate inovice at this moment" || msgClass.GeneralError,
         data: null
     })
 }
