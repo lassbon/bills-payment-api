@@ -1,6 +1,6 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.to = void 0;
+Object.defineProperty(exports, "__esModule", { value: true })
+export const to = void 0
 /**
  * @param { Promise } promise
  * @param { Object= } errorExt - Additional Information you can pass to the err object
@@ -22,7 +22,22 @@ const isEmpty = (val) => {
     return (val === undefined || val == null || val.length <= 0)
         ? true : false
 }
-module.exports = {
+
+const makePhoneNumberInternational = (phoneNumber) =>
+{
+    if (phoneNumber.substr(0, 1) == '0')
+    {
+        let internationalPrefix = "+234"
+        let num10Digits = phoneNumber.substr(1)
+        return internationalPrefix + num10Digits
+    } else if (phoneNumber.substr(1, 3) == '234') {
+        return phoneNumber
+    } else {
+        return phoneNumber;
+    }
+}
+export default {
     doSomeAsyncMagik,
-    isEmpty
+    isEmpty,
+    makePhoneNumberInternational
 }
