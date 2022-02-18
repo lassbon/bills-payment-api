@@ -3,11 +3,18 @@ const Joi = require('joi');
 const { v4: uuidv4 } = require('uuid');
 const msgClass = require('../errors/error');
 const paymentPaystackService = require('../services/paymentPaystack.services');
+const { doSomeAsyncMagik } = require('../utils/utils');
 // const paymentPaystackModel = require('../models/paymentPaystack.models');
 
 // createPage
 const createPage = async (req, res) => {
-	const { name, description, amount, slug, redirect_url } = req.body;
+	const {
+		name,
+		description,
+		amount,
+		slug,
+		redirect_url = 'www.zulfahgroup.com',
+	} = req.body;
 	const createPageSchema = Joi.object({
 		name: Joi.string().required(),
 		description: Joi.string(),
@@ -17,7 +24,7 @@ const createPage = async (req, res) => {
 	});
 	try {
 		const responseFromJoiValidation = createPageSchema.validate(req.body);
-		// console.log(responseFromJoiValidation);
+		console.log('im came from Joi:', responseFromJoiValidation);
 		if (responseFromJoiValidation.error) {
 			throw new Error('Bad request (Joi validation)');
 		}
@@ -86,7 +93,7 @@ const updatePage = async (req, res) => {
 	});
 	try {
 		const responseFromJoiValidation = createPageSchema.validate(req.body);
-		// console.log(responseFromJoiValidation);
+		console.log(responseFromJoiValidation);
 		if (responseFromJoiValidation.error) {
 			throw new Error('Bad request (Joi validation)');
 		}
@@ -120,10 +127,10 @@ const fetchPage = async (req, res) => {
 	const { id } = req.params;
 
 	try {
-		const fetchPageResponse = await paymentPaystackService.fetchPageServices(
-			id
+		const [err, fetchPageResponse] = await doSomeAsyncMagik(
+			paymentPaystackService.fetchPageServices(id)
 		);
-		if (fetchPageResponse.data.status != 'true') {
+		if (err) {
 			throw new Error(
 				'We could not be able to fetch this details. Kindly contact support'
 			);
@@ -148,9 +155,10 @@ const CheckSlugAvailability = async (req, res) => {
 	const { slug } = req.params;
 
 	try {
-		const CheckSlugAvailabilityResponse =
-			await paymentPaystackService.CheckSlugAvailabilityServices(slug);
-		if (CheckSlugAvailabilityResponse.data.status != true) {
+		const [err, CheckSlugAvailabilityResponse] = await doSomeAsyncMagik(
+			paymentPaystackService.CheckSlugAvailabilityServices(slug)
+		);
+		if (err) {
 			throw new Error(
 				'We could not be able to retrieve the data for this details. Kindly contact support'
 			);
@@ -159,7 +167,7 @@ const CheckSlugAvailability = async (req, res) => {
 		res.status(200).send({
 			status: true,
 			message: 'details successfully retrieved',
-			data: CheckSlugAvailabilityResponse.data.data,
+			data: CheckSlugAvailabilityResponse.data,
 		});
 	} catch (e) {
 		// console.log(`error: ${e.message}`)
