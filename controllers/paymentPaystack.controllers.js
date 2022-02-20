@@ -28,11 +28,11 @@ const createPage = async (req, res) => {
 		if (responseFromJoiValidation.error) {
 			throw new Error('Bad request (Joi validation)');
 		}
-		const CreateResponse = await paymentPaystackService.createPageServices(
-			req.body
+		const [err, CreateResponse] = await doSomeAsyncMagik(
+			paymentPaystackService.createPageServices(req.body)
 		);
 
-		if (CreateResponse.data.status == false) {
+		if (err) {
 			throw new Error('Sorry, page cannot be created at this moment');
 		}
 
@@ -57,11 +57,10 @@ const listPage = async (req, res) => {
 	// const { page, perPage } = req.params;
 
 	try {
-		const pageListResponse = await paymentPaystackService.listPageServices(
-			page,
-			perPage
+		const [err, pageListResponse] = await doSomeAsyncMagik(
+			paymentPaystackService.listPageServices(page, perPage)
 		);
-		if (pageListResponse.data.status != true) {
+		if (err) {
 			throw new Error(
 				'We could not load this page at this. Kindly contact support'
 			);
@@ -86,25 +85,28 @@ const updatePage = async (req, res) => {
 	const { name, description, amount, active } = req.body;
 	const createPageSchema = Joi.object({
 		name: Joi.string().required(),
-		description: Joi.string(),
+		description: Joi.string().required(),
 		amount: Joi.string(),
 		slug: Joi.string(),
 		active: Joi.boolean(),
 	});
 	try {
 		const responseFromJoiValidation = createPageSchema.validate(req.body);
-		console.log(responseFromJoiValidation);
+		// console.log(responseFromJoiValidation);
 		if (responseFromJoiValidation.error) {
 			throw new Error('Bad request (Joi validation)');
 		}
-		const updatePageResponse = await paymentPaystackService.updatePageServices(
-			name,
-			description,
-			amount,
-			active
+		const [err, updatePageResponse] = await doSomeAsyncMagik(
+			paymentPaystackService.updatePageServices(
+				name,
+				description,
+				amount,
+				slug,
+				active
+			)
 		);
 
-		if (updatePageResponse.data.status == false) {
+		if (err) {
 			throw new Error('Sorry, page cannot be updated at this moment');
 		}
 
@@ -159,15 +161,16 @@ const CheckSlugAvailability = async (req, res) => {
 			paymentPaystackService.CheckSlugAvailabilityServices(slug)
 		);
 		if (err) {
+			console.log('error i"m here: ', err);
+
 			throw new Error(
-				'We could not be able to retrieve the data for this details. Kindly contact support'
+				'sorry the slug Id details is already in use. Kindly contact support'
 			);
 		}
 
 		res.status(200).send({
 			status: true,
-			message: 'details successfully retrieved',
-			data: CheckSlugAvailabilityResponse.data,
+			message: 'slug Id details is available',
 		});
 	} catch (e) {
 		// console.log(`error: ${e.message}`)

@@ -9,7 +9,7 @@ router.get(
 	'/paymentPaystack/page/check_slug_availability/:slug',
 	paymentPaystackController.CheckSlugAvailability
 );
-router.get('/paymentPaystack/page/:slug', paymentPaystackController.updatePage);
+router.put('/paymentPaystack/page/:slug', paymentPaystackController.updatePage);
 router.get('/paymentPaystack/test', paymentPaystackController.test);
 
 module.exports = router;
