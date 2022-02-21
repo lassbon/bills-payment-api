@@ -6,4 +6,5 @@ router.post('/payment/initialize', paymentController.createTransaction);
 
 router.get('/payment/verify/:payment_ref', paymentController.verifyTransaction);
 
-module.exports = router;
+module.exports = router
+

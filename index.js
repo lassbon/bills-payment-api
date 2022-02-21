@@ -1,37 +1,45 @@
-require('dotenv').config();
-const express = require('express');
-const app = express();
-const bodyParser = require('body-parser');
-const morgan = require('morgan');
-const displayRoutes = require('express-routemap');
-const mySqlConnection = require('./config/mysql');
-const userRoutes = require('./routes/users.routes');
-const billPaymentRoutes = require('./routes/bills_payments.routes');
-const paymentRoutes = require('./routes/payment.routes');
-const paymentPaystackRoutes = require('./routes/paymentPaystack.routes');
-// const AppRoutes = require('./routes');
-const port = process.env.PORT;
+
+require('dotenv').config()
+const express = require('express')
+const app = express()
+const bodyParser = require('body-parser')
+const morgan = require('morgan')
+const displayRoutes = require('express-routemap')
+const mySqlConnection = require('./config/mysql')
+const userRoutes = require('./routes/users.routes')
+const billPaymentRoutes = require('./routes/bills_payments.routes')
+const paymentRoutes = require('./routes/payment.routes')
+const refundRoutes = require('./routes/refunds.routes')
+const transferRoutes = require('./routes/transfer.routes')
+const authRoutes = require('./routes/auth.routes')
+// const AppRoutes = require('./routes')
+const port = process.env.PORT
 
 // parse application/json
 app.use(bodyParser.json());
 
 app.listen(port, () => {
-	console.log(`i am listening on ${port}`);
-	displayRoutes(app);
-});
 
-mySqlConnection.connect((err) => {
-	if (err) throw err.stack;
-	// connected!
-	console.log('successfully connected: ', mySqlConnection.threadId);
-});
+    console.log(`i am listening on ${port}`)
+    displayRoutes(app)
+})
 
-app.use(morgan('combined'));
-app.use(userRoutes);
-app.use(billPaymentRoutes);
-app.use(paymentRoutes);
-app.use(paymentPaystackRoutes);
-// app.use(AppRoutes);
+mySqlConnection.connect(err => {
+    if (err) throw err.stack
+    // connected!
+    console.log('successfully connected: ' , mySqlConnection.threadId)
+  })
+
+
+app.use(morgan('combined'))
+app.use(userRoutes)
+app.use(billPaymentRoutes)
+app.use(paymentRoutes)
+app.use(refundRoutes)
+app.use(transferRoutes)
+app.use(authRoutes)
+//app.use(AppRoutes)
+
 
 app.get('/', (req, res) => {
 	res.status(200).send({
