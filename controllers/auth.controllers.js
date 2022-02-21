@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require('uuid')
 const { getUserDetailsByEmail, forgetPasswordModel,
         validateHash, updatePassword,
         deleteResetPasswordRecord } = require('../models/users.models')
-const { isEmpty, doSomeAsyncMagik } = require('../utils/utils').default
+const { isEmpty, doSomeAsyncMagik } = require('../utils/utils')
 const { readFileAndSendEmail } =  require('../services/email.services')
 const { hashMyPassword } =  require('../controllers/users.controllers')
 

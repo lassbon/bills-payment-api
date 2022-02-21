@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require('uuid')
 const Joi = require('Joi')
 const bcrypt = require('bcrypt')
 const util = require('util')
-const { isEmpty, doSomeAsyncMagik } = require('../utils/utils').default
+const { isEmpty, doSomeAsyncMagik } = require('../utils/utils')
 const saltRounds = 10
 
 const smsServices = require('../services/sms.services')

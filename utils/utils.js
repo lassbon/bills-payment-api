@@ -38,7 +38,7 @@ const makePhoneNumberInternational = (phoneNumber) =>
         return phoneNumber;
     }
 }
-export default {
+module.exports  = {
     doSomeAsyncMagik,
     isEmpty,
     makePhoneNumberInternational
