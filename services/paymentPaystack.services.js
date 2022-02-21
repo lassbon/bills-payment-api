@@ -2,34 +2,7 @@ require('dotenv').config();
 const axios = require('axios').default;
 const { v4: uuidv4 } = require('uuid');
 
-const initalizePayment = async (data) => {
-	return axios({
-		method: 'post',
-		url: `${process.env.PAYSTACK_BASE_URL}/transaction/initialize`,
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-		},
-		data: {
-			email: data.email,
-			amount: parseFloat(data.amount) * 100,
-			currency: 'NGN',
-			ref: uuidv4(),
-		},
-	});
-};
-
-const verifyPayment = async (payment_ref) => {
-	return axios({
-		method: 'get',
-		url: `${process.env.PAYSTACK_BASE_URL}/transaction/verify/${payment_ref}`,
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-		},
-	});
-};
-
+// create page
 const createPageServices = async (data) => {
 	return axios({
 		method: 'post',
@@ -67,7 +40,7 @@ const listPageServices = async (page, perPage) => {
 const fetchPageServices = (slug) => {
 	return axios({
 		method: 'get',
-		url: `${process.env.PAYSTACK_BASE_URL}/page/:${slug}`,
+		url: `${process.env.PAYSTACK_BASE_URL}/page/${slug}`,
 		headers: {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
@@ -75,10 +48,10 @@ const fetchPageServices = (slug) => {
 	});
 };
 //update page ***rosh help me with this :id_or_slug***
-const updatePageServices = async (data) => {
+const updatePageServices = async (slug, data) => {
 	return axios({
 		method: 'put',
-		url: `${process.env.PAYSTACK_BASE_URL}/page/:${slug}`,
+		url: `${process.env.PAYSTACK_BASE_URL}/page/${slug}`,
 		headers: {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
@@ -87,7 +60,7 @@ const updatePageServices = async (data) => {
 			name: data.name,
 			description: data.description,
 			amount: parseFloat(data.amount) * 100,
-			active: 'false',
+			// active: 'false',
 		},
 	});
 };
@@ -97,7 +70,7 @@ const updatePageServices = async (data) => {
 const CheckSlugAvailabilityServices = (slug) => {
 	return axios({
 		method: 'get',
-		url: `${process.env.PAYSTACK_BASE_URL}/page/check_slug_availability/:${slug}`,
+		url: `${process.env.PAYSTACK_BASE_URL}/page/check_slug_availability/${slug}`,
 		headers: {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,

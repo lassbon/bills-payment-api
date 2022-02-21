@@ -1,12 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true })
-export const to = void 0
+ const to = void 0
+
 /**
  * @param { Promise } promise
  * @param { Object= } errorExt - Additional Information you can pass to the err object
  * @return { Promise }
  */
 const doSomeAsyncMagik = (promise, errorExt) => {
+
             return promise
                 .then(function (data) { return [null, data]; })
                 .catch(function (err) {
@@ -41,3 +43,4 @@ export default {
     isEmpty,
     makePhoneNumberInternational
 }
+
