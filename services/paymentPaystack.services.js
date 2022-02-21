@@ -48,7 +48,7 @@ const fetchPageServices = (slug) => {
 	});
 };
 //update page ***rosh help me with this :id_or_slug***
-const updatePageServices = async (data) => {
+const updatePageServices = async (slug, data) => {
 	return axios({
 		method: 'put',
 		url: `${process.env.PAYSTACK_BASE_URL}/page/${slug}`,
@@ -60,7 +60,7 @@ const updatePageServices = async (data) => {
 			name: data.name,
 			description: data.description,
 			amount: parseFloat(data.amount) * 100,
-			active: 'false',
+			// active: 'false',
 		},
 	});
 };

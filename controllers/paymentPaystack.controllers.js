@@ -83,38 +83,44 @@ const listPage = async (req, res) => {
 // updatePage
 const updatePage = async (req, res) => {
 	const { name, description, amount, active } = req.body;
+	const { slug } = req.params;
 	const createPageSchema = Joi.object({
 		name: Joi.string().required(),
 		description: Joi.string().required(),
 		amount: Joi.string(),
-		slug: Joi.string(),
+		// slug: Joi.string(),
 		active: Joi.boolean(),
 	});
 	try {
 		const responseFromJoiValidation = createPageSchema.validate(req.body);
-		// console.log(responseFromJoiValidation);
+		console.log('from joi:=>', responseFromJoiValidation);
 		if (responseFromJoiValidation.error) {
 			throw new Error('Bad request (Joi validation)');
 		}
 		const [err, updatePageResponse] = await doSomeAsyncMagik(
 			paymentPaystackService.updatePageServices(
-				name,
-				description,
-				amount,
 				slug,
-				active
+
+				{
+					name,
+					description,
+					amount,
+				}
+
+				// active
 			)
 		);
 
 		if (err) {
-			throw new Error('Sorry, page cannot be updated at this moment');
+			console.log('herkr', err);
+			throw new Error('Sorry, this page cannot be updated at this moment');
 		}
-
-		res.status(200).send({
-			status: true,
-			message: 'page successfully created',
-			data: updatePageResponse.data.data,
-		});
+		console.log('hello:', updatePageResponse.data.data),
+			res.status(200).send({
+				status: true,
+				message: 'page successfully updated',
+				data: updatePageResponse.data.data,
+			});
 	} catch (e) {
 		res.status(400).send({
 			status: false,
