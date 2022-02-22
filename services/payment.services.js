@@ -1,6 +1,7 @@
 require('dotenv').config()
 const axios = require('axios').default
 const { v4: uuidv4 } = require('uuid')
+const fetch = require('node-fetch')
 
 
 const initalizePayment = async(data) => {
@@ -36,7 +37,7 @@ const verifyPayment = async(payment_ref) => {
     
 }
 
-const createSubaccount = async (data) => {
+/*const createSubaccount = async (bodyData) => {
     return axios({
         method: "post",
         url: `${process.env.PAYSTACK_BASE_URL}/subaccount/create`,
@@ -45,19 +46,54 @@ const createSubaccount = async (data) => {
             "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
         },
         data: {
-            "business_name":data.business_name,
-            "settlement_bank_code":data.settlement_bank_code,
-            "account_number":data.account_number,
-            "percentage_charge": 0.001,
+            "business_name":bodyData.business_name,
+            "settlement_bank":bodyData.settlement_bank,
+            "account_number":bodyData.account_number,
+            "percentage_charge": parseFloat(bodyData.percentage_charge)
             //"description": description
         }
     })
 }
 
-const listSubaccounts = async(perPage, page) => {
+const createSubaccount = async (bodyData) => {
+    return fetch({
+        method: "post",
+        url: `${process.env.PAYSTACK_BASE_URL}/subaccount/create`,
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+        },
+        body: {
+            "business_name":bodyData.business_name,
+            "settlement_bank":bodyData.settlement_bank,
+            "account_number":bodyData.account_number,
+            "percentage_charge": parseFloat(bodyData.percentage_charge)
+            //"description": description
+        }
+    })
+}*/
+
+const createSubaccount =(bodyData)=> {  
+    return fetch(`${process.env.PAYSTACK_BASE_URL}/subaccount/create`, {
+	    method: 'post',
+	    body: {
+            "business_name":bodyData.business_name,
+            "settlement_bank":bodyData.settlement_bank,
+            "account_number":bodyData.account_number,
+            "percentage_charge": parseFloat(bodyData.percentage_charge)
+            //"description": description
+        },
+	    headers: {'Content-Type': 'application/json',
+                  "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+        }
+    })
+    }
+
+
+const listSubaccounts = async(listSizePerPage, pageToGet) => {
     
     return axios({
-        method: "get",
+        method: 'GET',
         url: `${process.env.PAYSTACK_BASE_URL}/subaccount?perpage=${listSizePerPage}&page=${pageToGet}`,
         headers: {
             "Content-Type": "application/json",
@@ -71,7 +107,7 @@ const listSubaccounts = async(perPage, page) => {
 const getSubaccount = async(id) => {
     return axios({
         method: "get",
-        url: `${process.env.PAYSTACK_BASE_URL}/subaccount/:id`,
+        url: `${process.env.PAYSTACK_BASE_URL}/subaccount/${id}`,
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
@@ -84,14 +120,14 @@ const getSubaccount = async(id) => {
 const updateSubaccount = async (data) => {
     return axios({
         method: "put",
-        url: `${process.env.PAYSTACK_BASE_URL}/subaccount/:id`,
+        url: `${process.env.PAYSTACK_BASE_URL}/subaccount/id`,
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
         },
         data: {
             "business_name":data.business_name,
-            "settlement_bank_code":data.settlement_bank_code,
+            "settlement_bank":data.settlement_bank_code,
             
         }
     })

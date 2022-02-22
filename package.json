@@ -20,8 +20,8 @@
     "form-data": "^4.0.0",
     "handlebars": "^4.7.7",
     "joi": "^17.5.0",
-    "mysql": "^2.18.1",
-    "node-fetch": "^2.6.7",
+    "mysql": "^2.18.1",    
+    "node-fetch-npm": "^2.0.4",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
