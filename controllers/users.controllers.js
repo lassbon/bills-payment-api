@@ -1,12 +1,10 @@
 require('dotenv').config()
 const { v4: uuidv4 } = require('uuid')
-
-const Joi = require('Joi')
+const Joi = require('joi')
 const bcrypt = require('bcrypt')
 const util = require('util')
 const { isEmpty, doSomeAsyncMagik } = require('../utils/utils')
 const saltRounds = 10
-
 const smsServices = require('../services/sms.services')
 const emailServices = require('../services/email.services')
 const usersModel = require('../models/users.models')
@@ -37,8 +35,11 @@ const generateOTP = ()=>{
     return Math.floor(Math.random() * 10000)
 }
 
+// +LOGIN-related SECTION related: (not yet completed) router.get('/user/:id') endpoint
+const getUser = (req, res) => {  
+   
+    const { customer } = req.params
 
-const getUser = async(req, res) => {
    
     const  email  = req.body.customerEmail
 
@@ -61,11 +62,14 @@ const getUser = async(req, res) => {
             message: "Error"
         })
     }
+
 }
+//******************************************************** */
 
-const createNewUser = async (req, res) => {
+// +SIGNUP-related SECTION:  router.post('/user/create') endpoint
+const createNewUser = async (req, res) => {   
 
- 
+    // user-inputs (from front-end) validation using Joi (or alternatively, express-validator)
     const userSchema = Joi.object({
         firstname: Joi.string().required(),
         surname: Joi.string().required(),
@@ -82,8 +86,53 @@ const createNewUser = async (req, res) => {
             message: "Bad Request"
         })
     }
-
+    // destructuring of data coming from front-end:
     const { email, firstname, surname, password, phone } = req.body
+    const customer_id = uuidv4() // backend-generated
+    const otp = generateOTP()   // from function written above
+    
+    //(.THEN ... .CATCH APPROACH):
+
+    usersModel.checkUser(email, phone) // calling the db fn to check if user already exists
+    .then(checkUserResult => {
+        if (checkUserResult != "") {
+            throw new Error(msgClass.CustomerExist)
+        }
+
+        return usersModel.createNewUser(email, firstname, surname, password, phone, customer_id)
+    })
+    .then(sendOtpResult => {
+       //send to db
+        return usersModel.insertOtp(customer_id,otp)
+    })
+    .then(newuserResult => {
+        return smsServices.sendSMS(phone, `Hello, your otp is ${otp}`)
+    })
+    .then(newOtpResult => {
+        res.status(200).send({
+            status: true,
+            message: msgClass.CustomerCreated,
+            data: []
+        })
+    })
+    .catch(checkUserErr => {
+        //console.log(checkUserErr)
+            res.status(200).send({
+                status: false,
+                message:  checkUserErr.message || msgClass.GeneralError,
+                response: []
+         })
+     })
+     
+
+    // (ASYNC....AWAIT APPROACH   NB: See ASYNC statement in line 32)
+   /* try {
+       const checkIfUserExists =  await usersModel.checkUser(email, phone)
+        if (checkIfUserExists != "") {
+            throw new Error(msgClass.CustomerExist)
+        }  
+        await usersModel.createNewUser(email, firstname, surname, password, phone, customer_id)
+
     const customer_id = uuidv4()
     const otp = generateOTP()
     try {
@@ -101,17 +150,18 @@ const createNewUser = async (req, res) => {
         const  passwordHashed =  await hashMyPassword(password)
        
         await usersModel.newUser(email, firstname, surname, passwordHashed[1] , phone, customer_id)
+
         await usersModel.insertOtp(customer_id, otp)
         //send otp to user after registration
         await smsServices.sendSMS(phone, `Hello, your otp is ${otp}`)  
-       
-        const userFullname = `${firstname} ${surname}`
-        const dataReplacement = {
+        // views template related
+        const userFullname = `${firstname} ${surname}` // needed for views
+        const dataToUpdate = {
             "fullname": userFullname,
             "otp": otp
         }
-
-        emailServices.readFileAndSendEmail (email, "OTP VERIFICATION", dataReplacement, 'otp')
+        //calling the email service function to send email notification:
+        emailServices.readFileAndSendEmail (email, "OTP VERIFICATION", dataToUpdate, 'otp')
         
         res.status(200).send({
             status: true,
@@ -126,6 +176,8 @@ const createNewUser = async (req, res) => {
         
         })
     }
+    */
+
 
     // try {
     //    const checkIfUserExists =  await usersModel.checkUser(email, phone)
@@ -192,29 +244,15 @@ const createNewUser = async (req, res) => {
     //      })
     // })
 
+
 }
 
+// OTP VERIICATION related: router.get('/user/verify-otp/:customer/:email/:otp') endpoint
 const verifyOTP = (req, res) => {
 
     const { customer, email, otp } = req.params
 
-    // const OtpSchema = Joi.object({
-    //     params: {
-    //         customer: Joi.string().required(),
-    //         otp: Joi.string().required()
-    //     }
-    // })
-
-    // const validateOTP = OtpSchema.validate(req.params)
-    // if (validateOTP.error) {
-    //     res.status(422).send({
-    //         status: false,
-    //         message: msgClass.BadRequest,
-    //         data: []
-    //     })
-    // }
-
-    usersModel.getOtp(customer, otp)
+    usersModel.getOtp(customer, otp)  //calling db fn to check match/mismatch
     .then(otpResult => {
         //console.log("hereis otpResult: ", otpResult)
         if (otpResult == "") {
@@ -225,7 +263,7 @@ const verifyOTP = (req, res) => {
         if ((Math.floor(elapsedTime / 60000) > process.env.OTPExpirationTime)) {
             throw new Error(msgClass.OtpExpired)
         }
-        //update datavad onis OTpverified
+        //update data vad onis OTpverified
         usersModel.deleteOTP(otp, otpResult[0].customer_id)
         usersModel.updateOTPStatus(otpResult[0].customer_id)
 
@@ -266,7 +304,7 @@ const updateUser = () => {
 
 const resendOtp =   async (req, res) => {
     const { phone } = req.params
-    const otp = generateOTP()
+    const otp = generateOTP()   
     
     try {
 

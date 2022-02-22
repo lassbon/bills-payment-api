@@ -84,7 +84,7 @@ const getOtp =   (customer, otp) => {
  
 }
 
-const newUser =   async (email, firstname, surname, password, phone, customer_id) => {
+const createNewUser =   async (email, firstname, surname, password, phone, customer_id) => {
        return new Promise( (resolve, reject) => {
            mysqlConnection.query({
                sql: `Insert into customers(email, firstname, surname, password, phone, customer_id)values(?,?,?,?,?,?)`,
@@ -96,7 +96,7 @@ const newUser =   async (email, firstname, surname, password, phone, customer_id
                 }
                 resolve(results);
             })
-         })
+        })
     
     
     
@@ -267,7 +267,7 @@ const deleteResetPasswordRecord = async (hash) => {
 
 
 module.exports = {
-    newUser,
+    createNewUser,
     checkUser,
     insertOtp,
     getUserDetails,
