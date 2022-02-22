@@ -1,5 +1,28 @@
+
+
 const mysqlConnection = require('../config/mysql')
 
+
+
+const getUserDetailsByEmail =  async ( email) => {
+   
+    return new Promise((resolve, reject) => {
+
+        mysqlConnection.query({
+            sql: `select * from customers where email=?`,
+            values: [email]
+        },
+          (err, results, fields) => {
+                if (err) {
+                 reject(err)
+                }
+                resolve(results)
+          })
+    })
+}
+
+
+// const [rows, fields] = await mysqlConnection.execute('select * from customers where email=?', ['email']);
 
 
 const getUserDetailsByPhone =  async ( phone) => {
@@ -170,6 +193,77 @@ const updateOTPStatus = async (customer_id) => {
     })
 }
 
+const forgetPasswordModel = async(email, hash) => {
+    return new Promise( (resolve, reject) => {
+        mysqlConnection.query(
+            {
+                sql: `Insert into _forget_password(email,hash)values(?,?)`,
+                values: [email,hash]
+            },
+            (err, results, fields) => {
+             if (err) {
+               reject(err);
+             }
+             resolve(results);
+         })
+      })
+ 
+ 
+ 
+ 
+}
+
+const validateHash = async (hash) => {
+   
+    return new Promise((resolve, reject) => {
+
+        mysqlConnection.query({
+            sql: `select * from _forget_password where hash=?`,
+            values: [hash]
+        },
+          (err, results, fields) => {
+                if (err) {
+                 reject(err)
+                }
+                resolve(results)
+          })
+    })
+}
+
+const updatePassword = async (password, email) => {
+
+   
+    return new Promise((resolve, reject) => {
+
+        mysqlConnection.query({
+            sql: `update customers set password=? where email=?`,
+            values: [password, email]
+        },
+          (err, results, fields) => {
+                if (err) {
+                 reject(err)
+                }
+                resolve(results)
+          })
+    })
+}
+
+const deleteResetPasswordRecord = async (hash) => {
+   
+    return new Promise((resolve, reject) => {
+
+        mysqlConnection.query({
+            sql: `delete from _forget_password where hash=?`,
+            values: [hash]
+        },
+          (err, results, fields) => {
+                if (err) {
+                 reject(err)
+                }
+                resolve(results)
+          })
+    })
+}
 
 
 module.exports = {
@@ -181,5 +275,10 @@ module.exports = {
     deleteOTP,
     updateOTPStatus,
     getUserDetailsByPhone,
-    deleteOTPByCustomerID
+    deleteOTPByCustomerID,
+    getUserDetailsByEmail,
+    forgetPasswordModel,
+    validateHash,
+    deleteResetPasswordRecord,
+    updatePassword
 }
