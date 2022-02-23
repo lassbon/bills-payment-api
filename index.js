@@ -5,6 +5,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const displayRoutes = require('express-routemap')
+const winston = require('winston')
 const mySqlConnection = require('./config/mysql')
 const userRoutes = require('./routes/users.routes')
 const billPaymentRoutes = require('./routes/bills_payments.routes')
@@ -25,13 +26,16 @@ app.listen(port, () => {
 })
 
 mySqlConnection.connect(err => {
-    if (err) throw err.stack
+	logger.info({
+		message: `Database could not connect: ${err}`
+	  });
+    if (err) throw "Internal Server Error"
     // connected!
     console.log('successfully connected: ' , mySqlConnection.threadId)
   })
 
 
-app.use(morgan('combined'))
+app.use(morgan('tiny'))
 app.use(userRoutes)
 app.use(billPaymentRoutes)
 app.use(paymentRoutes)
@@ -40,6 +44,26 @@ app.use(transferRoutes)
 app.use(authRoutes)
 //app.use(AppRoutes)
 
+const logger = winston.createLogger({
+	level: 'info',
+	format: winston.format.json(),
+	defaultMeta: { service: 'user-service' },
+	transports: [
+	  //
+	  // - Write all logs with importance level of `error` or less to `error.log`
+	  // - Write all logs with importance level of `info` or less to `combined.log`
+	  //
+	  new winston.transports.File({ filename: 'error.log', level: 'error' }),
+	  new winston.transports.File({ filename: 'combined.log' }),
+	],
+});
+
+// if (process.env.NODE_ENV !== 'production') {
+// 	logger.add(new winston.transports.Console({
+// 	  format: winston.format.simple(),
+// 	}));
+//   }
+  
 
 app.get('/', (req, res) => {
 	res.status(200).send({
