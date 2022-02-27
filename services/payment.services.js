@@ -1,6 +1,7 @@
 require('dotenv').config()
 const axios = require('axios').default
 const { v4: uuidv4 } = require('uuid')
+const fetch = require('node-fetch')
 
 
 const initalizePayment = async(data) => {
@@ -104,23 +105,42 @@ const updateCustomer = (id) => {
 }
 
 
-const blackOrWhiteListing = (data) => {
- 
-    return axios({
-        method : "post",
-        url: `${process.env.PAYSTACK_BASE_URL}/customer/set_risk_action`,
+const blackOrWhiteListing = ({customer, risk_action}) => {
+
+  
+
+   return  fetch(`${process.env.PAYSTACK_BASE_URL}/customer/set_risk_action`,
+    {
+        method: 'POST',
         headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+            'Content-Type': 'application/json',
+             "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
         },
-        data:{
-            "email": data.email,
-            "risk_action": data.risk_action,
+        body: JSON.stringify(
+            {
+                "customer": customer,
+                "risk_action": risk_action
+                    
+           })
+});
+ 
+    // return axios({
+    //     method : "post",
+    //     url: `${process.env.PAYSTACK_BASE_URL}/customer/set_risk_action`,
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //         "Authorization": `Bearer ${process.env.PAYSTACK_SECRET_KEY}`
+    //     },
+    //     data:{
+    //         "customer": customer,
+    //         "risk_action": risk_action
             
-        }
-    })
+    //     }
+    // })
 
 }
+
+
 
 
 

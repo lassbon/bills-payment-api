@@ -7,6 +7,7 @@ const paymentModel = require('../models/payment.models')
 const { isEmpty, doSomeAsyncMagik } = require('../utils/utils')
 
 
+
 const createTransaction = async (req, res) => {
 
 
@@ -241,7 +242,7 @@ const customerUpdate = async (req,res) => {
 
     // const{id_} = req.params
 
-    const{id, first_name, last_name} = req.body
+    // const{id, first_name, last_name} = req.body
 
     const customerSchema = Joi.object({
         first_name: Joi.string().required(),
@@ -279,64 +280,61 @@ const customerUpdate = async (req,res) => {
 
 const whiteOrBlackListCustomer = async (req,res) => {
 
-    const { email , risk_action} = req.body
+    const { customer , risk_action} = req.body
 
     const whiteListschma = Joi.object({
-        email: Joi.string().email().required(),
-
+        customer: Joi.string().required(),
         risk_action: Joi.string().valid("default", "allow", "deny").required()
     })
-    // paymentService.blackOrWhiteListing(req.body)
-    // .then(result => {
-    //     console.log(`result happened: `, result)
-    //     res.status(200).send({
-    //                     status: true,
-    //                     message: "succcess",
-    //                     data: result
-    //         }) 
-    // })
-    // .catch(err => {
-    //     console.log(`error happened: `, err)
-    //     res.status(422).send({
-    //                     status:false,
-    //                     message: err
-    //                 })
-    // })
-
-try{
-    const responseFromJoiValidation = whiteListschma.validate(req.body)
-    console.log("i was able to validate")
-        if (responseFromJoiValidation.error){
-            throw new Error("Invalid input")
-        }
-    
-        console.log("i am gpoing to call the service")
-        const  [err, responseWhiteBlacklistCustomer] = await doSomeAsyncMagik(paymentService.blackOrWhiteListing(req.body))
-        if (err){
-          //  console.log("error: ", err)
-            throw new Error("Something happened")
-
-        }
-        if (!responseWhiteBlacklistCustomer){
-            //  console.log("error: ", err)
-              throw new Error("it happened not well")
-  
-          }
-        console.log("i got a response", responseWhiteBlacklistCustomer)
-
+    paymentService.blackOrWhiteListing(req.body)
+    .then(hikmah => {
+        return hikmah.json()
+    })
+    .then(result => {
         res.status(200).send({
-            status: true,
-            message: responseWhiteBlacklistCustomer.data.message,
-            data: responseWhiteBlacklistCustomer
-        })  
-    
-    }
-    catch(error){
+                        status: true,
+                        message: "success",
+                        data: result.data
+            }) 
+    })
+    .catch(err => {
+        console.log(`error happened: `, err)
         res.status(422).send({
-            status:false,
-            message: error
-        })
-    }
+                        status:false,
+                        message: err
+                    })
+    })
+
+// try{
+//     const responseFromJoiValidation = whiteListschma.validate(req.body)
+//     console.log("i was able to validate")
+//         if (responseFromJoiValidation.error){
+//             throw new Error("Invalid input")
+//         }
+    
+//         console.log("i am gpoing to call the service")
+//         const  [err, responseWhiteBlacklistCustomer] = await doSomeAsyncMagik(paymentService.blackOrWhiteListing(req.body))
+       
+//         if (err){
+//           //  console.log("error: ", err)
+//             throw new Error("Something happened")
+
+//         }
+//         console.log("i got a response", JSON.stringify(responseWhiteBlacklistCustomer))
+
+//         res.status(200).send({
+//             status: true,
+//             message: responseWhiteBlacklistCustomer.data.message,
+//             data: responseWhiteBlacklistCustomer.data.data
+//         })  
+    
+//     }
+//     catch(error){
+//         res.status(422).send({
+//             status:false,
+//             message: error
+//         })
+//     }
 }
     
 
