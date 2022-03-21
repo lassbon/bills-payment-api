@@ -1,0 +1,23 @@
+Boiler plate for api development
+
+Node: expressJS, 
+Database : mysql, 
+ORM: Sequelize,
+Validation: Joi
+Logger :  Winston
+Encryption :bcrypt
+Authentication Jsonwebtoken
+
+
+Project setup
+
+1. Clone project repo from  "<>"
+2. Cd into the project folder in your terminal 
+3. Run "npm install" on your machine to install dependencies
+4. Add your varibale in your .env
+
+
+
+
+Boom, you good to go
+Enjoy.

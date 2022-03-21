@@ -289,113 +289,35 @@ const Sequelize = require("sequelize")
 const mysqlConnection = require('../config/mysql')
 module.exports = (sequelize, DataTypes) => {
  
-    const Customer = sequelize.define('customers', {
+    const OTP = sequelize.define('_otps', {
         sn: {
             type: DataTypes.INTEGER,
             primaryKey: true,
-            field: 'sn',
             autoIncrement: true,
             allowNull: false
         },
         customer_id: {
             type: DataTypes.UUID,
             unique: true,
-            field: 'customer_id',
             allowNull: false,
+            references: {
+                model: 'customers', // 'customers' refers to table name
+                key: 'customer_id', // 'customer_id' refers to column name in customers table
+             },
             defaultValue: DataTypes.UUIDV4
 
         },
-        surname: {
+        otp: {
             type: DataTypes.STRING,
-            field: 'surname',
             allowNull: false
-        },
-        firstname: {
-            type: DataTypes.STRING,
-            field: 'firstname',
-            allowNull: false
-        },
-        phone: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            field: 'phone',
-            unique: true
-        },
-        email: {
-            type: DataTypes.STRING,
-            field: 'email',
-            allowNull: false,
-            unique: true
-        },
-        password: {
-            type: DataTypes.STRING,
-            field: 'password',
-        },
-        dob: {
-            type: DataTypes.DATE,
-            field: 'dob',
-        },
-        isNinAdded: {
-            type: DataTypes.BOOLEAN,
-            field: 'isNinAdded',
-            defaultValue: false
-        },
-        isotpVerified: {
-            type: DataTypes.BOOLEAN,
-            field: 'isotpVerified',
-            defaultValue: false
-        },
-        nin: {
-            type: DataTypes.STRING,
-            field: 'nin',
-            allowNull: true,
-            defaultValue: null
-        },
-        bvn: {
-            type: DataTypes.STRING,
-            field: 'bvn',
-            allowNull: true,
-            defaultValue: null
-        },
-        address: {
-            type: DataTypes.STRING,
-            field: 'address',
-            allowNull: true,
-            defaultValue: null
-        },
-        next_of_kin_fullname: {
-            type: DataTypes.STRING,
-            field: 'next_of_kin_fullname',
-            allowNull: true,
-            defaultValue: null
-        },
-        next_of_kin_relationship: {
-            type: DataTypes.STRING,
-            field: 'next_of_kin_relationship',
-            allowNull: true,
-            defaultValue: null
-        },
-        profile_picture: {
-            type: DataTypes.STRING,
-            field: 'profile_picture',
-            allowNull: true,
-            defaultValue: null
-        },
-        gender: {
-            type: DataTypes.STRING,
-            field: 'gender',
-            allowNull: true,
-            defaultValue: null
         },
         created_at: {
             type: DataTypes.DATE,
-            field: 'created_at',
             allowNull: false,
             defaultValue: DataTypes.NOW
         },
         modified_at: {
             type: DataTypes.DATE,
-            field: 'modified_at',
             allowNull: false,
             defaultValue: DataTypes.NOW
         },
@@ -403,7 +325,7 @@ module.exports = (sequelize, DataTypes) => {
     },{
         timestamps: false
       })
-    return Customer;
+    return OTP;
     
 }
 

@@ -1,6 +1,6 @@
 require('dotenv').config()
 const { v4: uuidv4 } = require('uuid')
-
+const { Op } = require('sequelize')
 const Joi = require('Joi')
 const bcrypt = require('bcrypt')
 const util = require('util')
@@ -9,9 +9,10 @@ const saltRounds = 10
 
 const smsServices = require('../services/sms.services')
 const emailServices = require('../services/email.services')
-const usersModel = require('../models/users.models')
+//const usersModel = require('../models/users.models')
+const models = require("../models")
 const msgClass = require('../errors/error')
-
+const logger = require('../logger')
 
 const hashMyPassword = (mypassword) => {
     
@@ -42,7 +43,8 @@ const getUser = async(req, res) => {
    
     const  email  = req.body.customerEmail
 
-    const [err, getUserDetails] = await doSomeAsyncMagik(usersModel.getUserDetailsByEmail(email))
+    // const [err, getUserDetails] = await doSomeAsyncMagik(usersModel.getUserDetailsByEmail(email))
+    const [err, getUserDetails] = await doSomeAsyncMagik(Customer.findAll({ where: { email: email } }))
     try {
         if (err) {
             throw new Error("Unable to complete action")
@@ -71,15 +73,16 @@ const createNewUser = async (req, res) => {
         surname: Joi.string().required(),
         email: Joi.string().email().required(),
         phone: Joi.string(), //length(11).pattern(/^[0-9]+$/),
-        password: Joi.string().required(),
+        password: Joi.string().required()
     })
 
     const validateUser = userSchema.validate(req.body)
     if (validateUser.error) {
+        logger.info("Seems there was validation error %s", validateUser.error.details[0].message)
         //console.log(validateUser.error.details[0].message)
         res.status(422).send({
             status: false,
-            message: "Bad Request"
+            message: validateUser.error.details[0].message
         })
     }
 
@@ -87,10 +90,19 @@ const createNewUser = async (req, res) => {
     const customer_id = uuidv4()
     const otp = generateOTP()
     try {
-        const [err, checkIfUserExists] = await doSomeAsyncMagik(usersModel.checkUser(email, phone))
+        // const [err, checkIfUserExists] = await doSomeAsyncMagik(usersModel.checkUser(email, phone))
+        const [err, checkIfUserExists] = await doSomeAsyncMagik(models.customers.findOne({
+            where: {
+                [Op.or]: [
+                    { email: email },
+                    { phone: phone }
+                ]
+            }
+        })
+        )
         if (err) {
-            
-            throw new Error("Try again please,this is on us, something happened")
+           logger.error("Error occured from checking if user exists:  %s", err)
+            throw new Error("Internal Server Error")
         }
         if (!isEmpty(checkIfUserExists)) {
             console.log("here: ", checkIfUserExists)
@@ -100,8 +112,10 @@ const createNewUser = async (req, res) => {
     
         const  passwordHashed =  await hashMyPassword(password)
        
-        await usersModel.newUser(email, firstname, surname, passwordHashed[1] , phone, customer_id)
-        await usersModel.insertOtp(customer_id, otp)
+       // await usersModel.newUser(email, firstname, surname, passwordHashed[1] , phone, customer_id)
+        await models.customers.create({ "email": email, "firstname":firstname, "surname":surname, "password":passwordHashed[1] , "phone":phone, "customer_id":customer_id })
+       // await usersModel.insertOtp(customer_id, otp)
+        await models.otp.create({"customer_id": customer_id, "otp":otp })
         //send otp to user after registration
         await smsServices.sendSMS(phone, `Hello, your otp is ${otp}`)  
        
