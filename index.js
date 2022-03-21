@@ -4,13 +4,18 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
+<<<<<<< HEAD
 const displayRoutes = require('express-routemap')
 const winston = require('winston')
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
+=======
+//const displayRoutes = require('express-routemap')
+>>>>>>> 2e97076fff8124305b90ae46df6d29edefc141e1
 const mySqlConnection = require('./config/mysql')
 const userRoutes = require('./routes/users.routes')
 const billPaymentRoutes = require('./routes/bills_payments.routes')
+const subaccountRoutes = require('./routes/subaccounts.routes')
 const paymentRoutes = require('./routes/payment.routes')
 const refundRoutes = require('./routes/refunds.routes')
 const transferRoutes = require('./routes/transfer.routes')
@@ -32,6 +37,7 @@ app.listen(port, async() => {
 	logger.info('i am listening on %s ', port)
 	// mySqlConnection.connect(err => {
 
+<<<<<<< HEAD
 	// 	if (err) throw err.stack
 	// 	// connected!
 	//    logger.info('successfully connected: %d ' , mySqlConnection.threadId)
@@ -59,6 +65,10 @@ app.listen(port, async() => {
 	// }
 	// });
   
+=======
+    console.log(`i am listening on ${port}`)
+    //displayRoutes(app)
+>>>>>>> 2e97076fff8124305b90ae46df6d29edefc141e1
 })
 
 
@@ -67,7 +77,18 @@ app.listen(port, async() => {
 app.use(morgan('tiny'))
 app.use(userRoutes)
 app.use(billPaymentRoutes)
+app.use(subaccountRoutes)
 app.use(paymentRoutes)
+app.get('/', (req, res) => {
+    
+    res.status(200).send({
+        status: "error",
+        message: "You are welcome guys",
+        data: []
+    })
+
+})
+
 app.use(refundRoutes)
 app.use(transferRoutes)
 app.use(authRoutes)

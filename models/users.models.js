@@ -82,6 +82,7 @@
  
  
  
+<<<<<<< HEAD
 // }
 
 // const newUser =   async (email, firstname, surname, password, phone, customer_id) => {
@@ -97,6 +98,23 @@
 //                 resolve(results);
 //             })
 //          })
+=======
+}
+
+const createNewUser =   async (email, firstname, surname, password, phone, customer_id) => {
+       return new Promise( (resolve, reject) => {
+           mysqlConnection.query({
+               sql: `Insert into customers(email, firstname, surname, password, phone, customer_id)values(?,?,?,?,?,?)`,
+               values: [email, firstname, surname, password, phone, customer_id]
+           }
+            ,  (err, results, fields) => {
+                if (err) {
+                  reject(err);
+                }
+                resolve(results);
+            })
+        })
+>>>>>>> 2e97076fff8124305b90ae46df6d29edefc141e1
     
     
     
@@ -408,3 +426,22 @@ module.exports = (sequelize, DataTypes) => {
 }
 
 
+<<<<<<< HEAD
+=======
+module.exports = {
+    createNewUser,
+    checkUser,
+    insertOtp,
+    getUserDetails,
+    getOtp,
+    deleteOTP,
+    updateOTPStatus,
+    getUserDetailsByPhone,
+    deleteOTPByCustomerID,
+    getUserDetailsByEmail,
+    forgetPasswordModel,
+    validateHash,
+    deleteResetPasswordRecord,
+    updatePassword
+}
+>>>>>>> 2e97076fff8124305b90ae46df6d29edefc141e1
