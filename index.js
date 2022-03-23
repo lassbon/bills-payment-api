@@ -4,17 +4,11 @@ const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
-<<<<<<< HEAD
 const displayRoutes = require('express-routemap')
 const winston = require('winston')
-<<<<<<< HEAD
 const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
-=======
 //const displayRoutes = require('express-routemap')
->>>>>>> 2e97076fff8124305b90ae46df6d29edefc141e1
-=======
->>>>>>> parent of ca2f6ff (weird)
 const mySqlConnection = require('./config/mysql')
 const userRoutes = require('./routes/users.routes')
 const billPaymentRoutes = require('./routes/bills_payments.routes')
@@ -24,61 +18,31 @@ const refundRoutes = require('./routes/refunds.routes')
 const transferRoutes = require('./routes/transfer.routes')
 const authRoutes = require('./routes/auth.routes')
 // const AppRoutes = require('./routes')
+const cors  = require('cors')
 const port = process.env.PORT
 
 // parse application/json
 app.use(bodyParser.json());
-<<<<<<< HEAD
 app.use(cors())
 
-app.listen(port, async() => {
-	console.log('i am listening on ', port);
+app.listen(port, async () => {
 	logger.info('i am listening on %s ', port)
-	// mySqlConnection.connect(err => {
+	console.log(`i am listening on ${port}`)
+	//displayRoutes(app)
+	console.log(`i am listening on ${port}`)
+	displayRoutes(app)
+	
+	mySqlConnection.connect(err => {
+		logger.info({
+			message: `Database could not connect: ${err}`
+		});
+		if (err) throw "Internal Server Error"
+		// connected!
+		console.log('successfully connected: ', mySqlConnection.threadId)
+	})
 
-<<<<<<< HEAD
-	// 	if (err) throw err.stack
-	// 	// connected!
-	//    logger.info('successfully connected: %d ' , mySqlConnection.threadId)
-	//   })
-=======
->>>>>>> parent of ca2f6ff (weird)
 
-app.listen(port, () => {
-
-<<<<<<< HEAD
-	//Database
-	// mySqlConnection.authenticate()
-	// .then(() => {
-	// console.log('Connection has been established successfully.');
-	//  displayRoutes(app); //show th eroutes in terminla
-	// })
-	// .catch(err => {
-	// console.error('Unable to connect to the database:', err);
-	// return {
-	// 	error: true,
-	// 	message: "Application failed to start"
-	// }
-	// });
-  
-=======
-    console.log(`i am listening on ${port}`)
-    //displayRoutes(app)
->>>>>>> 2e97076fff8124305b90ae46df6d29edefc141e1
-=======
-    console.log(`i am listening on ${port}`)
-    displayRoutes(app)
->>>>>>> parent of ca2f6ff (weird)
 })
-
-mySqlConnection.connect(err => {
-	logger.info({
-		message: `Database could not connect: ${err}`
-	  });
-    if (err) throw "Internal Server Error"
-    // connected!
-    console.log('successfully connected: ' , mySqlConnection.threadId)
-  })
 
 
 app.use(morgan('tiny'))

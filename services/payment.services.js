@@ -22,16 +22,7 @@ const initalizePayment = async (data) => {
 	});
 };
 
-const verifyPayment = async (payment_ref) => {
-	return axios({
-		method: 'get',
-		url: `${process.env.PAYSTACK_BASE_URL}/transaction/verify/${payment_ref}`,
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-		},
-	});
-};
+
 
 const createPageServices = async (data) => {
 	return axios({

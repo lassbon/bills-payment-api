@@ -1,0 +1,2 @@
+{"level":"info","message":"i am listening on %s ","service":"user-service"}
+{"level":"info","message":"Database could not connect: null","service":"user-service"}

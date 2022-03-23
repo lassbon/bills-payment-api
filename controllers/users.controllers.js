@@ -37,7 +37,7 @@ const generateOTP = ()=>{
 }
 
 // +LOGIN-related SECTION related: (not yet completed) router.get('/user/:id') endpoint
-const getUser = (req, res) => {  
+const getUser = async(req, res) => {  
    
     const { customer } = req.params
 
@@ -261,7 +261,7 @@ const createNewUser = async (req, res) => {
 }
 
 // OTP VERIICATION related: router.get('/user/verify-otp/:customer/:email/:otp') endpoint
-const verifyOTP = (req, res) => {
+const verifyOTP = async (req, res) => {
 
     const { customer, email, otp } = req.params
 
@@ -305,7 +305,7 @@ const verifyOTP = (req, res) => {
 }
 
 
-const updateUser = () => {
+const updateUser = async () => {
 
     res.status(200).send({
         status: true,
