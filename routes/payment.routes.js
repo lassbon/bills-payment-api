@@ -1,12 +1,10 @@
-const express = require('express')
-const router = express.Router()
-const paymentController  = require('../controllers/payment.controllers')
+const express = require('express');
+const router = express.Router();
+const paymentController = require('../controllers/payment.controllers');
 
+router.post('/payment/initialize', paymentController.createTransaction);
 
-
-router.post('/payment/initialize', paymentController.createTransaction)
-
-router.get('/payment/verify/:payment_ref', paymentController.verifyTransaction)
+router.get('/payment/verify/:payment_ref', paymentController.verifyTransaction);
 
 router.post('/customer/create-customer', paymentController.createNewCustomer)
 
@@ -21,3 +19,4 @@ router.post('/customer/white-or-blacklist', paymentController.whiteOrBlackListCu
 
 
 module.exports = router
+
