@@ -1,6 +1,8 @@
 "use strict";
+
 Object.defineProperty(exports, "__esModule", { value: true })
- const to = void 0
+
+
 
 /**
  * @param { Promise } promise
@@ -25,8 +27,8 @@ const isEmpty = (val) => {
         ? true : false
 }
 
-const makePhoneNumberInternational = (phoneNumber) =>
-{
+
+const makePhoneNumberInternational = (phoneNumber) => {
     if (phoneNumber.substr(0, 1) == '0')
     {
         let internationalPrefix = "+234"
@@ -38,9 +40,10 @@ const makePhoneNumberInternational = (phoneNumber) =>
         return phoneNumber;
     }
 }
+
+
 module.exports  = {
     doSomeAsyncMagik,
     isEmpty,
     makePhoneNumberInternational
 }
-
