@@ -2,9 +2,9 @@ require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const { v4: uuidv4 } = require('uuid') 
-// const { getUserDetailsByEmail, forgetPasswordModel,
-//         validateHash, updatePassword,
-//         deleteResetPasswordRecord } = require('../models/Customers')
+const { getUserDetailsByEmail, forgetPasswordModel,
+        validateHash, updatePassword,
+        deleteResetPasswordRecord } = require('../models/users.models')
 const { isEmpty, doSomeAsyncMagik } = require('../utils/utils')
 const { readFileAndSendEmail } =  require('../services/email.services')
 const { hashMyPassword } =  require('../controllers/users.controllers')
