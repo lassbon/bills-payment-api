@@ -87,32 +87,9 @@ const createTransaction = async (req, res) => {
 
 const verifyTransaction = async (req, res) => {
 
-
     // const { amount, paymentOptionType, email, phone, fullname, customer_id } = req.body
     const { payment_ref } = req.params
 
-    
- 
-
-    // paymentService.verifyPayment(payment_ref)
-    //     .then(result => {
-    //     res.status(200).send({
-    //                  status: true,
-    //                  message: "Transaction successfully found",
-    //                  data: result.data.data
-    //     })
-    // })
-    //     .catch(error => {
-          
-    //             if (result.data.status == false) {
-    //             throw new Error("Omo you got Alli, o se matric, ko gbe rice wa ")
-    //         }
-    //     res.status(200).send({
-    //                  status: true,
-    //                  message: error.message || "Transaction not found"
-    //              })
-    // })
-    
     try {
  
         const [paymentVerificationResponse, paymentVerificationErr] = await paymentService.verifyPayment(payment_ref)
@@ -135,74 +112,49 @@ const verifyTransaction = async (req, res) => {
         })
     }
      
-     
+}   
 
-     
  
-    // usersModel.newUser(email, firstname, surname, password, phone, customer_id)
-    // .then(userResult => {
-    //     console.log(userResult)
-    //     const otp = generateOTP()
-  
-    //     return smsServices.sendSMS(phone, `Hello, your otp is ${otp}`)
-    // })
-    // .then(otpResult => {
-    //     //console.log('i sent the otpp with response: ', (otpResult))
-    //     res.status(200).send({
-    //         status: true,
-    //         message: `${msgClass.CustomerCreated}. ${msgClass.OtpSentSuccessfully}`,
-    //         data: []
-    //     })
-    //  })
-    //     .catch(err => {
-    //        //console.log(err)
-    //     res.status(200).send({
-    //         status: false,
-    //         message: "Kindly try again later , This is on us",
-    //         response: []
-    //      })
-    // })
  
-
 
 
  const createNewCustomer = async (req,res) => {
 
-    const{ email, first_name, last_name, phone} = req.body
-
-    const customerSchema = Joi.object({
-        email: Joi.string().email().required(),
-        first_name: Joi.string().required(),
-        last_name: Joi.string().required(),
-        phone: Joi.string()
-    })
-    try {
-    const responseFromJoiValidation = customerSchema.validate(req.body)
-        if(responseFromJoiValidation.error) {
-            throw new Error("Bad request")
-        }
-        const createCustomerResponse = await paymentService.createCustomer(req.body)
-        console.log("Got back from paysatck: ", JSON.stringify(createCustomerResponse.data))
-        if (createCustomerResponse.data.status ==false) {
-            throw new Error("Customer hasn't been created")
-        }
-
-        res.status(200).send({
-            status: true,
-            message: "Customer created",
-            data: createCustomerResponse.data.data
-        })  
-    }
-    catch(error){
-        res.status(400).send({
-            status:false,
-            message: error.message || msgClass.GeneralError
+        const{ email, first_name, last_name, phone} = req.body
+    
+        const customerSchema = Joi.object({
+            email: Joi.string().email().required(),
+            first_name: Joi.string().required(),
+            last_name: Joi.string().required(),
+            phone: Joi.string()
         })
-    }
-
-}
-
-
+        try {
+        const responseFromJoiValidation = customerSchema.validate(req.body)
+            if(responseFromJoiValidation.error) {
+                throw new Error("Bad request")
+            }
+            const createCustomerResponse = await paymentService.createCustomer(req.body)
+            console.log("Got back from paysatck: ", JSON.stringify(createCustomerResponse.data))
+            if (createCustomerResponse.data.status ==false) {
+                throw new Error("Customer hasn't been created")
+            }
+    
+            res.status(200).send({
+                status: true,
+                message: "Customer created",
+                data: createCustomerResponse.data.data
+            })  
+        }
+        catch(error){
+            res.status(400).send({
+                status:false,
+                message: error.message || msgClass.GeneralError
+            })
+        }
+    
+ }
+    
+    
 const listCustomers = async (req,res) => {
     const perPage = parseInt(req.query.perPage) || 50
     const page = parseInt(req.query.page) || 1
@@ -222,46 +174,46 @@ const listCustomers = async (req,res) => {
     }
     catch(e) {
         // console.log(`error: ${e.message}`)
-         res.status(400).send({
-             status: false,
-             message: e.message || msgClass.GeneralError
- 
-      })
-     }
+            res.status(400).send({
+                status: false,
+                message: e.message || msgClass.GeneralError
+    
+        })
+        }
 }
-
+    
 const getCustomer = async (req, res) => {
 
-     const { email } = req.params
+        const { email } = req.params
     
-     try {
- 
-         const fetchCustomerResponse = await paymentService.fetchCustomer(email)
-         console.log(fetchCustomerResponse.data)
-         if (fetchCustomerResponse.data.status != true) {
-             throw new Error("We could not fetch Customer")
-         }
-         
-         res.status(200).send({
-             status: true,
-             message: "Customer retrieved",
-             data: fetchCustomerResponse.data.data
-         })
-     } 
-     catch(error) {
+        try {
+    
+            const fetchCustomerResponse = await paymentService.fetchCustomer(email)
+            console.log(fetchCustomerResponse.data)
+            if (fetchCustomerResponse.data.status != true) {
+                throw new Error("We could not fetch Customer")
+            }
+            
+            res.status(200).send({
+                status: true,
+                message: "Customer retrieved",
+                data: fetchCustomerResponse.data.data
+            })
+        } 
+        catch(error) {
         // console.log(`error: ${e.message}`)
-         res.status(400).send({
-             status: false,
-             message:   error.message || msgClass.GeneralError
- 
-      })
-     }
-     
-     
+            res.status(400).send({
+                status: false,
+                message:   error.message || msgClass.GeneralError
+    
+        })
+        }
+        
+        
 }     
-
-
-
+    
+    
+    
 const customerUpdate = async (req,res) => {
 
     // const{id_} = req.params
@@ -297,8 +249,6 @@ const customerUpdate = async (req,res) => {
     }
 
 }
-
-
 
 
 
@@ -362,9 +312,6 @@ const whiteOrBlackListCustomer = async (req,res) => {
 }
     
 
-
-
-}
 
 
 

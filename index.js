@@ -28,9 +28,6 @@ app.use(bodyParser.json());
 app.use(cors())
 
 app.listen(port, async () => {
-	logger.info('i am listening on %s ', port)
-	console.log(`i am listening on ${port}`)
-	//displayRoutes(app)
 	console.log(`i am listening on ${port}`)
 	displayRoutes(app)
 	

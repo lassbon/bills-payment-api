@@ -62,7 +62,7 @@ const createInvoice = async (req, res) => {
 }
 
 const listInvoice =  (req, res) => {
-const{perPage, page, customerID, status, currency, invoiceId } = req.params
+const{ customerID, status, currency, invoiceId } = req.params
     const page = req.params.page   || 60
     const perPage = req.params.perPage || 5
   
@@ -87,7 +87,7 @@ const{perPage, page, customerID, status, currency, invoiceId } = req.params
 
 }
  
-const viewInvioce = (req, res) => {
+const viewInvioce = async(req, res) => {
 
 const { invoice_ID } = req.params
 const invoice = generateNewInvoice(invoice_ID)

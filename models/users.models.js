@@ -43,12 +43,12 @@ const getUserDetailsByPhone =  async ( phone) => {
 }
 
 
-const insertOtp =   async (customer_id, otp) => {
+const insertOtp =   async (customer_id, email, otp) => {
     return new Promise( (resolve, reject) => {
         mysqlConnection.query(
             {
-                sql: `Insert into _otps(customer_id,otp)values(?,?)`,
-                values: [customer_id, otp]
+                sql: `Insert into _otps(customer_id,email,otp)values(?,?,?)`,
+                values: [customer_id,email, otp]
             },
             (err, results, fields) => {
              if (err) {
@@ -64,12 +64,12 @@ const insertOtp =   async (customer_id, otp) => {
 }
 
 
-const getOtp =   (customer, otp) => {
+const getOtp =   (email, otp) => {
     return new Promise( (resolve, reject) => {
         mysqlConnection.query(
             {
-                sql: `select * from _otps where customer_id =? and otp=?`,
-                values: [customer, otp]
+                sql: `select * from _otps where email =? and otp=?`,
+                values: [email, otp]
             },
             (err, results, fields) => {
              if (err) {

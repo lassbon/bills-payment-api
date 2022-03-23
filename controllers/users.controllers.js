@@ -84,7 +84,7 @@ const createNewUser = async (req, res) => {
         //console.log(validateUser.error.details[0].message)
         res.status(422).send({
             status: false,
-            message: "Bad Request"
+            message: validateUser.error.details[0].message
         })
     }
     // destructuring of data coming from front-end:
@@ -100,13 +100,14 @@ const createNewUser = async (req, res) => {
             throw new Error(msgClass.CustomerExist)
         }
 
-        return usersModel.createNewUser(email, firstname, surname, password, phone, customer_id)
+        return usersModel.newUser(email, firstname, surname, password, phone, customer_id)
     })
     .then(sendOtpResult => {
        //send to db
-        return usersModel.insertOtp(customer_id,otp)
+        return usersModel.insertOtp(customer_id,email, otp)
     })
     .then(newuserResult => {
+        
         return smsServices.sendSMS(phone, `Hello, your otp is ${otp}`)
     })
     .then(newOtpResult => {
@@ -265,15 +266,16 @@ const verifyOTP = async (req, res) => {
 
     const { customer, email, otp } = req.params
 
-    usersModel.getOtp(customer, otp)  //calling db fn to check match/mismatch
+    usersModel.getOtp(email, otp)  //calling db fn to check match/mismatch
     .then(otpResult => {
-        //console.log("hereis otpResult: ", otpResult)
-        if (otpResult == "") {
+        console.log("hereis otpResult: ", otpResult)
+        if (otpResult.length == 0 ||otpResult== "" ) {
             throw new Error(msgClass.OtpMismatch)
         }
         
         const elapsedTime = Date.now() -  otpResult[0].created_at
-        if ((Math.floor(elapsedTime / 60000) > process.env.OTPExpirationTime)) {
+        if ((Math.floor(elapsedTime / 60000) > process.env.OTPExpirationTime))
+        {
             throw new Error(msgClass.OtpExpired)
         }
         //update data vad onis OTpverified
@@ -287,16 +289,14 @@ const verifyOTP = async (req, res) => {
             emailServices.readFileAndSendEmail (email, "WELCOME ONBOARD", dataToUpdate, 'welcome')
             
         res.status(200).send({
-            status: false,
-            message: msgClass.OtpVerificationSuccessful,
-            data: []
+            status: true,
+            message: msgClass.OtpVerificationSuccessful
         })
     })
     .catch(err => {
         res.status(400).send({
             status: false,
             message: err.message || msgClass.GeneralError,
-            data: []
         })
     })
 
