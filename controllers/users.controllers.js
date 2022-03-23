@@ -345,6 +345,7 @@ const resendOtp =   async (req, res) => {
   
 }
 
+
 module.exports = {
     createNewUser,
     getUser,

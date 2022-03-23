@@ -280,6 +280,8 @@ const deleteResetPasswordRecord = async (hash) => {
     })
 }
 
+
+
 module.exports = {
     newUser,
     checkUser,
@@ -296,3 +298,4 @@ module.exports = {
     deleteResetPasswordRecord,
     updatePassword
 }
+
