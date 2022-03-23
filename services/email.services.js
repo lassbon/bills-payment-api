@@ -29,6 +29,7 @@ const readFileAndSendEmail =  async (toEmail, emailHeader, dataReplacement, file
     
     let dirpath = path.join(__dirname, `../views/templates/${filename}.html`)
     let readTheFile = await readMyFileAndReturnPromise(dirpath)
+
     const template = Handlebars.compile(readTheFile)
     const result = template(dataReplacement)
     const msg = {
@@ -39,11 +40,11 @@ const readFileAndSendEmail =  async (toEmail, emailHeader, dataReplacement, file
     }
     sgMail.send(msg)
     .then(() => {
-        return "suucesss"
+        return "success"
     })
-        .catch(err => {
+    .catch(err => {
         console.log("error: ", JSON.stringify(err.response.body))
-            return "failed"
+        return "failed"
     })
 
 }

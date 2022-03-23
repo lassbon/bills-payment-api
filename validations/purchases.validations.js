@@ -1,4 +1,4 @@
-const Joi = require('Joi')
+const Joi = require('joi')
 
 const purchasesValidation = Joi.object({
     // customer_id: Joi.string().required(),

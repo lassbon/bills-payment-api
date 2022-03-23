@@ -16,7 +16,7 @@ const createNewTransaction = async (data) => {
                 resolve(results);
             })
     })
-    
+    // paystack
 }
 
 
