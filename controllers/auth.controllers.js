@@ -131,19 +131,24 @@ const completeForgetPassword = async (req, res) => {
 
     const {hash} = req.params
     const { newPassword, confirmNewPassword } = req.body
+
+    // if (isEmpty(checkIfHashIsValid)) {
+
+    //     throw new Error('Unable to perform this operation')
+    // }
+    if (newPassword != confirmNewPassword) {
+        res.status(400).send({
+            status: false,
+            message: "Password does not match"
+        })
+    }else{
+
+
     try {
         const [err, checkIfHashIsValid] = await doSomeAsyncMagik(validateHash(hash))
         if (err) {
             throw new Error('Internal Server Error', 500)
         }
-        if (isEmpty(checkIfHashIsValid)) {
-
-            throw new Error('Unable to perform this operation', 400)
-        }
-        if (newPassword != confirmNewPassword) {
-            throw new Error('Password does not match', 400)
-        }
-        console.log("checkIfHashIsValid: ", checkIfHashIsValid)
 
         //update the password
         const passwordHashed = await hashMyPassword(newPassword)
@@ -151,10 +156,6 @@ const completeForgetPassword = async (req, res) => {
         if (err2) {
             throw new Error('Internal Server Error', 500)
         }
-        console.log("after ")
-        // if (!isEmpty(updatePasswordResponse)) {
-        //     throw new Error('Internal Server Error', 500)
-        // }
 
         await deleteResetPasswordRecord(hash)
 
@@ -163,14 +164,15 @@ const completeForgetPassword = async (req, res) => {
             message: `Password successfully updated`
         })
     }
-catch (e) {
-    console.log(e)
+    catch (err) {
+        console.log("err: " , err)
         res.status(400).send({
             status: false,
-            message: e.message 
+            message: err || "Something went wrong"
         })
-}
 
+    }
+    }
 
 }
 

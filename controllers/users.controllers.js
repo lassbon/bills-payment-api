@@ -323,21 +323,18 @@ const resendOtp =   async (req, res) => {
 
         const userDetails = await usersModel.getUserDetailsByPhone(phone)
         await usersModel.deleteOTPByCustomerID(userDetails[0].customer_id)
-        await usersModel.insertOtp(userDetails[0].customer_id, otp)
+        await usersModel.insertOtp(userDetails[0].customer_id, userDetails[0].email, otp)
         await smsServices.sendSMS(phone, `Hello, your new otp is ${otp}`)
         
         res.status(200).send({
             status: true,
-            message: msgClass.OtpResentSentSuccessfully,
-            data: []
+            message: msgClass.OtpResentSentSuccessfully
         })
 
     } catch (err) {
-        console.log(err)
-        res.status(200).send({
-            status: true,
-            message: msgClass.GeneralError,
-            data: []
+        res.status(400).send({
+            status: false,
+            message: msgClass.GeneralError
         })
     }
 
