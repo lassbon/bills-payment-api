@@ -21,11 +21,15 @@ const transferRoutes = require('./routes/transfer.routes')
 const authRoutes = require('./routes/auth.routes')
 // const AppRoutes = require('./routes')
 const cors  = require('cors')
+const { token } = require('morgan')
 const port = process.env.PORT
 
 // parse application/json
 app.use(bodyParser.json());
-app.use(cors())
+const option = {
+	exposedHeaders: ['Content-Length', 'token'],
+}
+app.use(cors(option))
 
 app.listen(port, async () => {
 	console.log(`i am listening on ${port}`)
@@ -57,7 +61,7 @@ app.use(invoiceRoutes)
 app.get('/', (req, res) => {
     
     res.status(200).send({
-        status: "error",
+        status: false,
         message: "You are welcome guys",
         data: []
     })

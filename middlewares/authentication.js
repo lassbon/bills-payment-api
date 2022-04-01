@@ -3,36 +3,38 @@ const jwt = require('jsonwebtoken');
 const { createNewTransaction } = require('../models/payment.models');
 const authentication = async(req, res, next) => {
 
-    const token = req.headers.authorization
+    const {token} = req.headers
     
-    const tokenSplit = token.split(" ")
+ 
     if (!token) {
         res.status(401).send({
             status: false,
             message: 'Unauthorized Access'
                     
         })
-    }
-    
-     jwt.verify(tokenSplit[1], process.env.JWT_SECRET, (err, decoded)=> {
+    } else {
 
-         if (err) {
-            res.status(401).send({
-                status: false,
-                message: 'Unauthorized Acesss'
+        const tokenSplit = token.split(" ")
+    
+        jwt.verify(tokenSplit[1], process.env.JWT_SECRET, (err, decoded) => {
+
+            if (err) {
+                res.status(401).send({
+                    status: false,
+                    message: 'Unauthorized Acesss'
                         
-            })
-         }
+                })
+            }
 
-         req.body.customerEmail = decoded.email
-         req.body.fakeId =  decoded._id
+            req.body.customerEmail = decoded.email
+            req.body.fakeId = decoded._id
    
-         next() 
+            next()
          
          
          
-     })
-    
+        })
+    }
 
 
 }
