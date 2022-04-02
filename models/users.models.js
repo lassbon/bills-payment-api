@@ -149,7 +149,7 @@ const checkUser = async (email, phone) => {
           (err, results, fields) => {
                 if (err) {
                  reject(err)
-                }
+              }
                 resolve(results)
           })
     })

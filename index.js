@@ -32,8 +32,8 @@ const option = {
 app.use(cors(option))
 
 app.listen(port, async () => {
-	console.log(`i am listening on ${port}`)
-	displayRoutes(app)
+//	console.log(`i am listening on ${port}`)
+	//displayRoutes(app)
 	
 	mySqlConnection.connect(err => {
 		logger.info({
@@ -41,7 +41,7 @@ app.listen(port, async () => {
 		});
 		if (err) throw "Internal Server Error"
 		// connected!
-		console.log('successfully connected: ', mySqlConnection.threadId)
+		//console.log('successfully connected: ', mySqlConnection.threadId)
 	})
 
 
@@ -102,3 +102,6 @@ app.use((req, res, next) => {
 		message: 'Seems you got lost. so sorry',
 	});
 });
+
+
+module.exports = app

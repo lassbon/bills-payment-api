@@ -55,7 +55,7 @@ const login = async (req, res) => {
                     res.setHeader('token', token)
                         res.status(200).send({
                                 status: true,
-                                message: "Successfully logged in "
+                                message: "Successfully logged in"
                    })
                    
                 }
@@ -70,7 +70,7 @@ const login = async (req, res) => {
         
         res.status(400).send({
             status: false,
-            message: err.message || "Something went wrong"
+            message: err.message ??  "Something went wrong"
         })
     })
   
